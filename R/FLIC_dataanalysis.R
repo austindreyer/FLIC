@@ -1,5 +1,5 @@
 #### FLIC Raw Data Analysis ####
-#### updated 4/2/2018      ####
+#### updated 4/8/2018      ####
 
 ## Steps 1 - 9 below describe the process of taking data taken from the laptop
 ## connected to the MCU and making into ClockLab compatable files. Steps 10-11
@@ -70,12 +70,12 @@ source("/Users/your_luc_id/folder_name/subfolder_name/ParametersClass.R")
 source("/Users/your_luc_id/folder_name/subfolder_name/CommonChamber.R")
 source("/Users/your_luc_id/folder_name/subfolder_name/FLIC_hbfunctions.R")
 
-
 attach("/Users/austindreyer/Documents/R/flic/FLICFunctions", pos=2)
 source("/Users/austindreyer/Documents/R/flic/DFM.R")
 source("/Users/austindreyer/Documents/R/flic/ParametersClass.R")
 source("/Users/austindreyer/Documents/R/flic/CommonChamber.R")
 source("/Users/austindreyer/Documents/R/flic/FLIC_hbfunctions.R")
+
 
 ####### 3 #######
 # You then need to load the specific R packages listed below that are used
@@ -92,8 +92,13 @@ library(stats) # don't need to install stats, is native package. Do need
 
 library(plyr)
 library(tidyverse)
-library(ggplot2)
 library(MASS)
+
+# Also helpful to increase the memory limit of R just to be safe for reading
+# in data/manipulating data. To do this, use the function memory.limit()
+# and set a value that is very large
+
+memory.limit(99999999)
 
 ####### 4 #######
 # Once the packages and functions are loaded, and the working directory is
@@ -318,6 +323,18 @@ bin30.dfm10.180201.at  <- BinFeedingData.Licks(dfm10.180201.at,30)
 ## 
 
 ####### 10 #######
+
+##### SUPER IMPORTANT #####
+
+# When loading an old workspace, chances are the old workspace
+# will have functions (including those for plotting) already
+# read in, and they will overwrite what you had in the workspace
+# before loading. That means you should always reload the appropriate
+# FLIC_hbfunctions.R file before plotting things to make sure
+# everything will work appropriately. 
+
+source("/Users/your_luc_id/folder_name/subfolder_name/FLIC_hbfunctions.R")
+
 # There are a series of plotting functions in the FLIC_hbfunctions.R
 # file that you will utilize here for data visualization. They are:
 # 1. ind.plot() which will produce raw data plots for each fly by DFM
