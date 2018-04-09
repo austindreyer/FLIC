@@ -1,4 +1,4 @@
-## Updated 3/27/18 ##
+## Updated 4/9/18 ##
 
 ######## FLIC HomeBrew Functions ########
 
@@ -509,7 +509,7 @@ color.select <- function(gencol)
 
 ## Function to plot raw data and feeding events across time
 
-Feeding_Events_Plot <- function(data, well, start_day = 0, start_hour = 0, start_min = 0, end_day = 100, end_hour = 0, end_min = 0)
+Feeding_Events_Plot <- function(data, well, start_min = 0, end_min = 1000000)
 {
   #extracts raw data to be plotted
   plot.data <- data$RawData
@@ -520,27 +520,26 @@ Feeding_Events_Plot <- function(data, well, start_day = 0, start_hour = 0, start
   #creates data frame of all feeding events for selected well
   feed.data <- Feeding.Durations.Well(data, well)
   
-  #calculated starting time and ending time of x axis
-  start.time <- (start_day*432000)+(start_hour*18000)+(start_min*300)
-  end.time <- (end_day*432000)+(end_hour*18000)+(end_min*300)
-  
   #truncate the full data sets to start and end time
-  plot.sub <- subset(plot.data, Minutes > start.time & Minutes < end.time)
-  feed.sub <- subset(feed.data, Minutes > start.time & Minutes < end.time)
+  plot.sub <- subset(plot.data, Minutes > start_min & Minutes < end_min)
+  feed.sub <- subset(feed.data, Minutes > start_min & Minutes < end_min)
   
   #create upper and lower bounds of line segments for feeding event identification
-  y.bottom <- rep((mean(dfm1.180202.at$RawData[,well.plot])-55), length(feed.sub$Minutes))
-  y.top <- rep((mean(dfm1.180202.at$RawData[,well.plot])-5), length(feed.sub$Minutes))
+  y.bottom <- rep((mean(plot.sub[,well.plot])-25), length(feed.sub$Minutes))
+  y.top <- rep((mean(plot.sub[,well.plot])-5), length(feed.sub$Minutes))
   
   #create line segments to indicate when feeding events occurred
   segment.data <- data.frame(xint = as.numeric(feed.sub$Minutes), 
                              y.low = y.bottom,
                              y.up = y.top)
   
+  #create title for plot
+  plot.title <- deparse(substitute(data))
+  
   #plot the raw data and the line segments for feeding events
-  p <- ggplot(plot.sub, aes(x = Minutes, y = plot.sub[,well.sub]))
+  p <- ggplot(plot.sub, aes(x = Minutes, y = plot.sub[,well.plot]))
   p + 
-  labs(y = well.sub) +
+  labs(y = well.plot, title = plot.title) +
   geom_line() +
   geom_segment(data = segment.data,
                 aes(x = xint, xend = xint,
