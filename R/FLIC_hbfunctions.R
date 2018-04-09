@@ -525,7 +525,7 @@ Feeding_Events_Plot <- function(data, well, start_min = 0, end_min = 100000)
   feed.sub <- subset(feed.data, Minutes > start_min & Minutes < end_min)
   
   #create upper and lower bounds of line segments for feeding event identification
-  y.bottom <- rep((mean(plot.sub[,well.plot])-55), length(feed.sub$Minutes))
+  y.bottom <- rep((mean(plot.sub[,well.plot])-25), length(feed.sub$Minutes))
   y.top <- rep((mean(plot.sub[,well.plot])-5), length(feed.sub$Minutes))
   
   #create line segments to indicate when feeding events occurred
