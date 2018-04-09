@@ -509,7 +509,7 @@ color.select <- function(gencol)
 
 ## Function to plot raw data and feeding events across time
 
-Feeding_Events_Plot <- function(data, well, start_min = 0, end_min = 100000)
+Feeding_Events_Plot <- function(data, well, start_day = 0, start_hour = 0, start_min = 0, end_day = 100, end_hour = 0, end_min = 0)
 {
   #extracts raw data to be plotted
   plot.data <- data$RawData
@@ -520,13 +520,17 @@ Feeding_Events_Plot <- function(data, well, start_min = 0, end_min = 100000)
   #creates data frame of all feeding events for selected well
   feed.data <- Feeding.Durations.Well(data, well)
   
+  #calculated starting time and ending time of x axis
+  start.time <- (start_day*432000)+(start_hour*18000)+(start_min*300)
+  end.time <- (end_day*432000)+(end_hour*18000)+(end_min*300)
+  
   #truncate the full data sets to start and end time
-  plot.sub <- subset(plot.data, Minutes > start_min & Minutes < end_min)
-  feed.sub <- subset(feed.data, Minutes > start_min & Minutes < end_min)
+  plot.sub <- subset(plot.data, Minutes > start.time & Minutes < end.time)
+  feed.sub <- subset(feed.data, Minutes > start.time & Minutes < end.time)
   
   #create upper and lower bounds of line segments for feeding event identification
-  y.bottom <- rep((mean(plot.sub[,well.plot])-25), length(feed.sub$Minutes))
-  y.top <- rep((mean(plot.sub[,well.plot])-5), length(feed.sub$Minutes))
+  y.bottom <- rep((mean(dfm1.180202.at$RawData[,well.plot])-55), length(feed.sub$Minutes))
+  y.top <- rep((mean(dfm1.180202.at$RawData[,well.plot])-5), length(feed.sub$Minutes))
   
   #create line segments to indicate when feeding events occurred
   segment.data <- data.frame(xint = as.numeric(feed.sub$Minutes), 
