@@ -1,4 +1,4 @@
-## Updated 4/9/18 ##
+## Updated 4/11/18 ##
 
 ######## FLIC HomeBrew Functions ########
 
@@ -490,11 +490,11 @@ color.select <- function(gencol)
 {
   if (grepl("gal4", gencol))
   {
-    color = "purple"
+    color = "magenta4"
   }
   else if (grepl("exp", gencol))
   {
-    color = "red"
+    color = "red3"
   }
   else if (grepl("uas", gencol))
   {
@@ -509,7 +509,7 @@ color.select <- function(gencol)
 
 ## Function to plot raw data and feeding events across time
 
-Feeding_Events_Plot <- function(data, well, start_min = 0, end_min = 1000000)
+Feeding_Events_Plot_Well <- function(data, well, start_min = 0, end_min = 1000000)
 {
   #extracts raw data to be plotted
   plot.data <- data$RawData
@@ -522,6 +522,9 @@ Feeding_Events_Plot <- function(data, well, start_min = 0, end_min = 1000000)
   
   #truncate the full data sets to start and end time
   plot.sub <- subset(plot.data, Minutes > start_min & Minutes < end_min)
+  
+  if (length(feed.data)>1)
+  {
   feed.sub <- subset(feed.data, Minutes > start_min & Minutes < end_min)
   
   #create upper and lower bounds of line segments for feeding event identification
@@ -536,20 +539,107 @@ Feeding_Events_Plot <- function(data, well, start_min = 0, end_min = 1000000)
   #create title for plot
   plot.title <- deparse(substitute(data))
   
+  
+ 
   #plot the raw data and the line segments for feeding events
-  p <- ggplot(plot.sub, aes(x = Minutes, y = plot.sub[,well.plot]))
-  p + 
-  labs(y = well.plot, title = plot.title) +
-  geom_line() +
-  geom_segment(data = segment.data,
+    ggplot(plot.sub, aes(x = Minutes, y = plot.sub[,well.plot])) +
+              labs(y = well.plot, title = plot.title) +
+              geom_line(linetype = "dashed", alpha=0.4) +
+              geom_segment(data = segment.data,
                 aes(x = xint, xend = xint,
                 y = y.low, yend = y.up),
                 colour = "red")
-  
+   }
+  else
+    {
+  #plot just the raw data if no feeding events took place (i.e. dead fly)
+      
+    plot.title <- deparse(substitute(data))
+      
+    ggplot(plot.sub, aes(x = Minutes, y = plot.sub[,well.plot])) +
+        labs(y = well.plot, title = plot.title) +
+        geom_line(linetype = "dashed", alpha=0.4)
+    }
   
 }
 
+# Function to create paneled plots for all 12 wells comparing
+# raw data and feeding events
 
+Feeding_Events_DFMPlots <- function(data, start_min = 0, end_min = 100000)
+{
+  
+  require(gridExtra)
+  
+  #create empty list to populate with actual plots
+  plots <- list()
+  
+  #create empty list to populate with specific well data
+  plot.sub.well <- list()
+  
+  #extracts raw data to be plotted
+  plot.data <- data$RawData
+  
+  #create title for plot
+  plot.title <- deparse(substitute(data))
+  
+  for (i in 1:12)
+  {
+  
+  #creates full well designation by pasting a "W" before the number
+  well.plot <- paste0("W", i)  
+  
+  #creates data frame of all feeding events for selected well
+  feed.data <- Feeding.Durations.Well(data, i)
+  
+  #truncate the full data sets to start and end time
+  plot.sub <- subset(plot.data, Minutes > start_min & Minutes < end_min)
+  
+  #extract just the data that needs to be plotted for each well
+  plot.single.well <- plot.sub %>% select(Minutes, Signal = well.plot)
+  plot.sub.well[[i]] <- plot.single.well
+  
+  
+  if (length(feed.data)>1)
+  {
+    feed.sub <- subset(feed.data, Minutes > start_min & Minutes < end_min)
+    
+    #create upper and lower bounds of line segments for feeding event identification
+    y.bottom <- rep((mean(plot.sub[,well.plot])-25), length(feed.sub$Minutes))
+    y.top <- rep((mean(plot.sub[,well.plot])-5), length(feed.sub$Minutes))
+    
+    #create line segments to indicate when feeding events occurred
+    segment.data <- data.frame(xint = as.numeric(feed.sub$Minutes), 
+                               y.low = y.bottom,
+                               y.up = y.top)
+    
+    #plot the raw data and the line segments for feeding events
+    plots[[i]] <- ggplot(plot.sub.well[[i]], 
+                         aes(x = Minutes, y = Signal)) +
+      labs(y = well.plot, title = plot.title) +
+      geom_line(linetype = "dashed", 
+                alpha=0.4) +
+      geom_segment(data = segment.data,
+                   aes(x = xint, xend = xint,
+                       y = y.low, yend = y.up),
+                   colour = "red")
+  }
+  else
+  {
+    #plot just the raw data if no feeding events took place (i.e. dead fly)
+    
+    plots[[i]] <- ggplot(plot.sub.well[[i]], #ggplot does lazy evaluation, index reference only in reference to data =...
+                         aes(x = Minutes, y = Signal)) +
+      labs(y = well.plot, title = plot.title) +
+      geom_line(linetype = "dashed", 
+                alpha=0.4)
+  }
+  
+  }
+  
+  do.call(grid.arrange, plots)
+  
+}
 
 ## Function to find local maxima and minima 
 
