@@ -616,7 +616,7 @@ Feeding_Events_DFMPlots <- function(data, start_min = 0, end_min = 100000)
     #plot the raw data and the line segments for feeding events
     plots[[i]] <- ggplot(plot.sub.well[[i]], 
                          aes(x = Minutes, y = Signal)) +
-      labs(y = well.plot, title = plot.title) +
+      labs(y = well.plot) +
       geom_line(linetype = "dashed", 
                 alpha=0.4) +
       geom_segment(data = segment.data,
@@ -630,14 +630,14 @@ Feeding_Events_DFMPlots <- function(data, start_min = 0, end_min = 100000)
     
     plots[[i]] <- ggplot(plot.sub.well[[i]], #ggplot does lazy evaluation, index reference only in reference to data =...
                          aes(x = Minutes, y = Signal)) +
-      labs(y = well.plot, title = plot.title) +
+      labs(y = well.plot) +
       geom_line(linetype = "dashed", 
                 alpha=0.4)
   }
   
   }
   
-  do.call(grid.arrange, plots)
+  do.call(grid.arrange, c(plots, top = plot.title))
   
 }
 
