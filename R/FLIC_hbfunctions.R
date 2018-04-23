@@ -1,4 +1,4 @@
-## Updated 4/11/18 ##
+## Updated 4/23/18 ##
 
 ######## FLIC HomeBrew Functions ########
 
@@ -30,6 +30,7 @@ DFMData_numeric <- function(data, method)
         }
       }
     }
+    return(data)
   }
   
   
