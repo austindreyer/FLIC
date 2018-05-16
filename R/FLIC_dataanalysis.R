@@ -51,11 +51,19 @@ source("/Users/your_luc_id/folder_name/subfolder_name/ParametersClass.R")
 source("/Users/your_luc_id/folder_name/subfolder_name/CommonChamber.R")
 source("/Users/your_luc_id/folder_name/subfolder_name/FLIC_hbfunctions.R")
 
+# for mac laptop
 attach("/Users/austindreyer/Documents/R/flic/FLICFunctions", pos=2)
 source("/Users/austindreyer/Documents/R/flic/DFM.R")
 source("/Users/austindreyer/Documents/R/flic/ParametersClass.R")
 source("/Users/austindreyer/Documents/R/flic/CommonChamber.R")
 source("/Users/austindreyer/Documents/R/flic/FLIC_hbfunctions.R")
+
+# for lab computer
+attach("/Users/adreyer/Desktop/FLIC/R/FLICFunctions", pos=2)
+source("/Users/adreyer/Desktop/FLIC/R/DFM.R")
+source("/Users/adreyer/Desktop/FLIC/R/ParametersClass.R")
+source("/Users/adreyer/Desktop/FLIC/R/CommonChamber.R")
+source("/Users/adreyer/Desktop/FLIC/R/FLIC_hbfunctions.R")
 
 ####### 3 #######
 # You then need to load the specific R packages listed below that are used
