@@ -1,5 +1,5 @@
 #### FLIC Raw Data Processing and Plotting ####
-#### updated 5/1/2018 ####
+#### updated 5/17/2018 ####
 
 ## Steps 1 - 9 below describe the process of taking data taken from the laptop
 ## connected to the MCU and making into ClockLab compatable files. Steps 10-11
