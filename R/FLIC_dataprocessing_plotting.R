@@ -214,7 +214,12 @@ FindDataBreaks(dfm1.date.information.at) #example of finding data breaks
 
 # Ex: DFMData_numeric(dfm1.180201.at, "at")
 
-dfm1.180201.at <- DFMClass(1,p) # The number here will refer to the DFM_1 data that is in the working directory you set at the beginning
+# To ensure all dates have been changed when analyzing multiple dfms at once,
+# best to copy and paste a complete set of objects (e.g. DFMClass() through 
+# BinFeedingData.Licks()) into a new R script and just to a "Find and Replace"
+# search for the old date (e.g. 180201) replacing it with new one (180505)
+
+dfm1.180201.at <- DFMClass(1,p) # The number here will refer to the DFM_1.csv data that is in the working directory you set at the beginning
 dfm2.180201.at <- DFMClass(2,p)
 dfm3.180201.at <- DFMClass(3,p)
 dfm4.180201.at <- DFMClass(4,p)
