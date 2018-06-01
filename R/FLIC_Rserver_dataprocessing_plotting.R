@@ -85,8 +85,11 @@ source("/homes/bio/FLIC/R/FLIC_hbfunctions.R")
 # Navigate to the correct folder using setwd() and then use the
 # source() function to read it in
 
-#Ex: setwd("/homes/bio/FLIC/R")
-#Ex: source("/homes/bio/FLIC/R/CommonChamber.R")
+setwd("/homes/bio/FLIC/R")
+source("/homes/bio/FLIC/R/CommonChamber.R")
+
+# Once CommonChamber.R is read in, need to navigate back to 
+# the appropriate raw data FLIC folder to begin data extraction
 
 
 ####### 3 #######
