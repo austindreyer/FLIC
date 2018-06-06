@@ -65,7 +65,7 @@
 # functions are avialable, and then "source" the remaining scripts 
 
 # First navigate to the directory containing the R files to be read in
-setwd("~/homes/bio/FLIC/R")
+setwd("/homes/bio/FLIC/R")
 
 attach("/homes/your_luc_id/FLIC/R/FLICFunctions", pos=2)
 source("/homes/your_luc_id/FLIC/R/DFM.R")
@@ -102,11 +102,6 @@ library(MASS)
 ## uncheck and recheck the box next to dplyr. You should see confirmation 
 ## of it being detached and reladed in the console below.
 
-# Also helpful to increase the memory limit of R just to be safe for reading
-# in data/manipulating data. To do this, use the function memory.limit()
-# and set a value that is very large
-
-memory.limit(99999999)
 
 ####### 4 #######
 # Once the packages and functions are loaded, and the working directory is
