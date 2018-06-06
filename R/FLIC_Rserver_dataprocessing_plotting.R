@@ -74,11 +74,22 @@ source("/homes/your_luc_id/FLIC/R/CommonChamber.R")
 source("/homes/your_luc_id/FLIC/R/FLIC_hbfunctions.R")
 
 # example for server
-attach("/homes/adreyer/FLIC/R/FLICFunctions", pos=2)
-source("/homes/adreyer/FLIC/R/DFM.R")
-source("/homes/adreyer/FLIC/R/ParametersClass.R")
-source("/homes/adreyer/FLIC/R/CommonChamber.R")
-source("/homes/adreyer/FLIC/R/FLIC_hbfunctions.R")
+attach("/homes/bio/FLIC/R/FLICFunctions", pos=2)
+source("/homes/bio/FLIC/R/DFM.R")
+source("/homes/bio/FLIC/R/ParametersClass.R")
+source("/homes/bio/FLIC/R/FLIC_hbfunctions.R")
+
+## specific instructions for reading in CommonChamber.R
+# For some reason, you must be in the same directory as 
+# the CommonChamber.R file for it to successfully be sourced. 
+# Navigate to the correct folder using setwd() and then use the
+# source() function to read it in
+
+setwd("/homes/bio/FLIC/R")
+source("/homes/bio/FLIC/R/CommonChamber.R")
+
+# Once CommonChamber.R is read in, need to navigate back to 
+# the appropriate raw data FLIC folder to begin data extraction
 
 
 ####### 3 #######
