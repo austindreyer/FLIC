@@ -444,8 +444,8 @@ genotype.plot.fig <- function (data, title, genotypecol, size=1.5, shape=21, low
                        breaks = seq(low, high, by=by), 
                        labels = seq(low, high, by=by)) +
     geom_ribbon(data=data,aes(ymin=mean-se,ymax=mean+se), fill = color, colour=NA, alpha=0.4)+
-    scale_fill_manual(name = "genotype", values = c('red', 'blue', 'green')) +
-    #geom_point(size=size, shape=shape, fill=color) + 
+    #scale_fill_manual(name = "genotype", values = c('red', 'blue', 'green')) +
+    geom_point(size=size, shape=shape, fill=color) + 
     theme_classic() +
     theme(axis.line.x = element_line(color="black", size = .5),
           axis.line.y = element_line(color="black", size = .5),
