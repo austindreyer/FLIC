@@ -158,7 +158,7 @@ memory.limit(99999999)
 
 ### Box Plot ###
 
-# The syntax for boxplots is the same as for aov: boxplot(variable ~ category, data = data)
+# The syntax for boxplots is the same as for aov: boxplot(variable ~ category, data = data, xlab = "text", ylab = "text")
 
 # To add raw data, you will need to use the points() function which requires two inputs and 
 # a couple of aesthetic options. Points will overlay points to the existing plot in the Plots panel
