@@ -844,3 +844,25 @@ function(id,parameters) {
   }
   data 
 }
+
+# function to calculate the volume of food individual flies consumed in the CAFE assay
+              
+  CAFE_Feed <- function(edist, bottles, flies, fdist, ...)
+{
+  tot.dist <- CAFE_Add(fdist, ...)
+  
+  tot.edist <- edist*bottles
+  
+  feed.dist <- tot.dist - tot.edist
+  
+  fly.feed <- feed.dist/flies
+  
+  return(fly.feed)
+}
+# function to add feeding measurements of individual capillary tubes for CAFE assay
+CAFE_Add <- function(fdist,...)
+{
+  tot.dist <- sum(fdist,...)
+  return(tot.dist)
+}              
+  
