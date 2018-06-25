@@ -444,8 +444,8 @@ genotype.plot.fig <- function (data, title, genotypecol, size=1.5, shape=21, low
                        breaks = seq(low, high, by=by), 
                        labels = seq(low, high, by=by)) +
     geom_ribbon(data=data,aes(ymin=mean-se,ymax=mean+se), fill = color, colour=NA, alpha=0.4)+
-    scale_fill_manual(name = "genotype", values = c('red', 'blue', 'green')) +
-    #geom_point(size=size, shape=shape, fill=color) + 
+    #scale_fill_manual(name = "genotype", values = c('red', 'blue', 'green')) +
+    geom_point(size=size, shape=shape, fill=color) + 
     theme_classic() +
     theme(axis.line.x = element_line(color="black", size = .5),
           axis.line.y = element_line(color="black", size = .5),
@@ -844,3 +844,25 @@ function(id,parameters) {
   }
   data 
 }
+
+# function to calculate the volume of food individual flies consumed in the CAFE assay
+              
+  CAFE_Feed <- function(edist, bottles, flies, fdist, ...)
+{
+  tot.dist <- CAFE_Add(fdist, ...)
+  
+  tot.edist <- edist*bottles
+  
+  feed.dist <- tot.dist - tot.edist
+  
+  fly.feed <- feed.dist/flies
+  
+  return(fly.feed)
+}
+# function to add feeding measurements of individual capillary tubes for CAFE assay
+CAFE_Add <- function(fdist,...)
+{
+  tot.dist <- sum(fdist,...)
+  return(tot.dist)
+}              
+  
