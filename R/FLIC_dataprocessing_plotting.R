@@ -396,7 +396,7 @@ source("/Users/your_luc_id/folder_name/subfolder_name/FLIC_hbfunctions.R")
 # arguments:
 # 1. data = binned data for a dfm
 # 2. idate = initial day of experiment in "YYYY-MM-DD" format
-# 3. itime = itime = starting time of experiment in miltary time with no colon, 
+# 3. itime = starting time of experiment in miltary time with no colon, 
 # 4. stime = the time at which data is to start being collected based 
 # on entrainment schedule, 
 # 5. sday = the start day of data analysis, 

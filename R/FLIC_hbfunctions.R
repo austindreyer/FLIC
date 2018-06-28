@@ -319,6 +319,8 @@ test.fun <- function(a, b, ...){
 subset.data <- function(data, idate, itime, stime, sday, eday, datatype, well, ...){
   
   require(plyr)
+  require(purrr)
+  require(dplyr)
   
   hour <- round_any(data$Min/60,0.5)
   unnorm <- data
@@ -355,9 +357,12 @@ for (i in 1:(length(mt[1,])-2)) {
   init.date <- as.POSIXlt(sprintf("%s %04d", idate, itime), format = "%Y-%m-%d %H%M")
   start.date <- as.POSIXlt(sprintf("%s %04d", idate, stime), format = "%Y-%m-%d %H%M")
   start.data <- ((as.numeric(start.date) - as.numeric(init.date)) + (86400*(sday-1)))/3600
-  end.data <- ((as.numeric(start.date) - as.numeric(init.date)) + (86400*(eday-1)))/3600
+  #end.data <- ((as.numeric(start.date) - as.numeric(init.date)) + (86400*(eday-1)))/3600
+  end.data <- (eday - sday)*48
   
-  mrmt.sub <- subset(wells.data, hour > start.data & hour < end.data)
+  #mrmt.sub <- subset(wells.data, hour > start.data & hour < end.data)
+  mrmt.fsub <- subset(wells.data, hour > start.data)
+  mrmt.sub <- mrmt.fsub[1:end.data,]
   mrmt.sub$hours <- mrmt.sub$hour-head(mrmt.sub$hour, n=1)
 
   #remove hour column
