@@ -55,6 +55,7 @@ DFMData_numeric <- function(data, method)
       }
     }
   }
+    return(data)
 }
 
 
