@@ -55,6 +55,7 @@ DFMData_numeric <- function(data, method)
       }
     }
   }
+  return(data)
 }
 
 
@@ -851,7 +852,15 @@ function(id,parameters) {
 }
 
 # function to calculate the volume of food individual flies consumed in the CAFE assay
-              
+      
+CAFE_Feed_Bottle <- function(vol, sdist, fdist, evap, flies)
+{
+  feed <- (((vol*(sdist-fdist))/sdist)-evap)/flies
+  
+  return(feed)
+}
+
+        
   CAFE_Feed <- function(edist, bottles, flies, fdist, ...)
 {
   tot.dist <- CAFE_Add(fdist, ...)
