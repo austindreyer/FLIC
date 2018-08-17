@@ -55,11 +55,9 @@ DFMData_numeric <- function(data, method)
       }
     }
   }
-<<<<<<< HEAD
+  
   return(data)
-=======
-    return(data)
->>>>>>> d18b9081c909240c0e0dd2efd02b3870ced17d9d
+
 }
 
 
@@ -519,11 +517,18 @@ color.select <- function(gencol)
 
 ## Function to plot raw data and feeding events across time
 
-Feeding_Events_Plot_Well <- function(data, well, start_min = 0, end_min = 1000000)
+Feeding_Events_Plot_Well <- function(data, datatype, well, start_min = 0, end_min = 1000000)
 {
-  #extracts raw data to be plotted
-  plot.data <- data$RawData
-
+  #extracts data to be plotted, raw or baselined
+  if (grepl("raw", datatype))
+  {
+    plot.data <- data$RawData
+  }
+  else if (grepl("base", datatype))
+  {
+    plot.data <- data$BaselineData
+  }
+  
   #creates full well designation by pasting a "W" before the number
   well.plot <- paste0("W", well)
   
@@ -587,8 +592,15 @@ Feeding_Events_DFMPlots <- function(data, start_min = 0, end_min = 100000)
   #create empty list to populate with specific well data
   plot.sub.well <- list()
   
-  #extracts raw data to be plotted
-  plot.data <- data$RawData
+  #extracts data to be plotted, raw or baselined
+  if (grepl("raw", datatype))
+  {
+    plot.data <- data$RawData
+  }
+  else if (grepl("base", datatype))
+  {
+    plot.data <- data$BaselineData
+  }
   
   #create title for plot
   plot.title <- deparse(substitute(data))
