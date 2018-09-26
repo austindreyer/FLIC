@@ -138,9 +138,26 @@ p <- SetParameter(p,Tasting.Threshold.Interval = c(10,40)) # sets low and high r
 
 p <- SetParameter(p,Use.Adaptive.Threshold = TRUE) # turns the adaptive threshold on, FALSE = off
 
-
 # To avoid biasing tasting data, make sure that 
 # Tasting.Threshold.Interval.High <= Feeding.Interval.Minimum.
+
+## Need to use a different parameter set to analyze data from Sable FLIC monitors
+
+p10 <- ParametersClass.SingleWell() # refers to the number of wells included
+# in the FLIC experiment, either ParametersClass.SingleWell() if 12 wells or 
+# ParameterClass.TwoWell() if using 6 wells
+
+# you can observe the parameters currently in use by typing in the variable:
+# p
+
+p10 <- SetParameter(p10,Signal.Threshold = 2) # sets the overall baseline signal
+p10 <- SetParameter(p10,Feeding.Threshold.Value = 15) # sets the minimum mV for a peak to be considered feeding
+p10 <- SetParameter(p10,Feeding.Interval.Minimum = 5) # minimum duration of event to be called feeding
+p10 <- SetParameter(p10,Tasting.Threshold.Interval = c(2,5)) # sets low and high range of time for a mV peak to be a feeding event
+p10 <- SetParameter(p10, Feeding.Minevents = 4)
+
+p10 <- SetParameter(p,Use.Adaptive.Threshold = TRUE) # turns the adaptive threshold on, FALSE = off
+
 
 ####### 5 #######
 
