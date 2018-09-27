@@ -1,5 +1,5 @@
 #### FLIC Raw Data Processing and Plotting ####
-#### updated 5/17/2018 ####
+#### updated 9/27/2018 ####
 
 ## Steps 1 - 9 below describe the process of taking data taken from the laptop
 ## connected to the MCU and making into ClockLab compatable files. Steps 10-11
@@ -156,7 +156,7 @@ p10 <- SetParameter(p10,Feeding.Interval.Minimum = 5) # minimum duration of even
 p10 <- SetParameter(p10,Tasting.Threshold.Interval = c(2,5)) # sets low and high range of time for a mV peak to be a feeding event
 p10 <- SetParameter(p10, Feeding.Minevents = 4)
 
-p10 <- SetParameter(p,Use.Adaptive.Threshold = TRUE) # turns the adaptive threshold on, FALSE = off
+p10 <- SetParameter(p10,Use.Adaptive.Threshold = TRUE) # turns the adaptive threshold on, FALSE = off
 
 
 ####### 5 #######
@@ -254,11 +254,11 @@ bin30.dfm3.180201.at  <- BinFeedingData.Licks(dfm3.180201.at,30)
 bin30.dfm4.180201.at  <- BinFeedingData.Licks(dfm4.180201.at,30)
 bin30.dfm5.180201.at  <- BinFeedingData.Licks(dfm5.180201.at,30)
 
-dfm6.180201.at <- DFMClass(6,p) # The number here will refer to the DFM_1 data that is in the working directory you set at the beginning
-dfm7.180201.at <- DFMClass(7,p)
-dfm8.180201.at <- DFMClass(8,p)
-dfm9.180201.at <- DFMClass(9,p)
-dfm10.180201.at <- DFMClass(10,p)
+dfm6.180201.at <- DFMClass(6,p10) # The number here will refer to the DFM_1 data that is in the working directory you set at the beginning
+dfm7.180201.at <- DFMClass(7,p10)
+dfm8.180201.at <- DFMClass(8,p10)
+dfm9.180201.at <- DFMClass(9,p10)
+dfm10.180201.at <- DFMClass(10,p10)
 
 dfm6.180201.at <- DFMData_numeric(dfm6.180201.at, "at")
 dfm7.180201.at <- DFMData_numeric(dfm7.180201.at, "at")
