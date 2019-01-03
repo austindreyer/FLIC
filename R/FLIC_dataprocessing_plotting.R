@@ -97,6 +97,7 @@ source("/Users/adreyer/Desktop/FLIC/R/FLIC_hbfunctions.R")
 library(plyr)
 library(tidyverse)
 library(MASS)
+library(reshape2)
 
 ## The package dplyr needs to be detached and then reloaded after the above
 ## have been loaded to correct for an internal masking problem of required 

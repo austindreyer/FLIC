@@ -1,4 +1,4 @@
-## Updated 7/13/18 ##
+## Updated 1/2/19 ##
 
 ######## FLIC HomeBrew Functions ########
 
@@ -319,7 +319,7 @@ test.fun <- function(a, b, ...){
 ### separate function to truncate binned data to just specific days for comparison
 # only the idate and datatype arguments need be in quotes
 
-subset.data <- function(data, idate, itime, stime, sday, eday, datatype, well, ...){
+subset.data <- function(data, idate, itime, stime, sday, eday, datatype, hset, well, ...){
   
   require(plyr)
   require(purrr)
@@ -363,11 +363,19 @@ for (i in 1:(length(mt[1,])-2)) {
   #end.data <- ((as.numeric(start.date) - as.numeric(init.date)) + (86400*(eday-1)))/3600
   end.data <- (eday - sday)*48
   
+  if (hset == "running")
+  {
   #mrmt.sub <- subset(wells.data, hour > start.data & hour < end.data)
   mrmt.fsub <- subset(wells.data, hour > start.data)
   mrmt.sub <- mrmt.fsub[1:end.data,]
   mrmt.sub$hours <- mrmt.sub$hour-head(mrmt.sub$hour, n=1)
-
+  }
+  else
+  {
+    mrmt.fsub <- subset(wells.data, hour > start.data)
+    mrmt.sub <- mrmt.fsub[1:end.data,]
+    mrmt.sub$hours <- rep(seq(0,23.5,0.5), times = (eday-sday))
+  }
   #remove hour column
   
   mrmt.sub <- mrmt.sub[, !(names(mrmt.sub) %in% "hour")]
@@ -866,6 +874,67 @@ function(id,parameters) {
   }
   data 
 }
+
+# function to combine dataframes from multiple experiments by genotype for plotting
+combine_days <- function(data, ...)
+{
+  require(dplyr)
+  # pull out the hours column for averaging later
+  hours <- c(rep(seq(0,23.5,.5), 5))
+  
+  # combine data from different experiments by genotype
+  all_days <- bind_cols(data, ...)
+  
+  # remove dupliacte "hours" columns
+  all_days <- all_days[, -grep("hour", names(all_days))]
+  
+  # add back in a single "hours" column for averaging
+  all_days["hours"] <- hours
+  
+  return(all_days)
+}
+
+# function to create day/night plots of 24 hr averaged activity
+day_meanbehav_plot <- function(data)
+{
+  
+  require(ggplot2)
+  
+  # average behavioral tally of each 30 minute bin for each fly
+  mean_data <- aggregate(. ~hours, data = data, mean)
+  
+  # the mean activity across all flies
+  activity_means <- data.frame(hours = mean_data[,1], means = rowMeans(mean_data[,-1]))
+  
+  # add in column for night vs. day bars (to be used as grouping variable when plotting)
+  activity_means$n.d <- c(rep("n", 12), rep("d", 24), rep("n", 12))
+  
+  # standard error function
+  se <- function(x) sqrt(var(x)/length(x))
+  
+  # pull out just the data without the "hours" to calculate standard errors
+  activity_means_fly <- mean_data[,-1]
+  
+  # add standard errors for each binned data group
+  activity_means$se <- apply(activity_means_fly, 1, se)
+  
+  # create the base plotting object for ggplot
+  p <- ggplot(activity_means, aes(hours, means, fill=n.d))
+  
+  # plot the thing, complete with error bars, no background, and axis labels
+  p + 
+    geom_bar(stat = "identity", colour = "black") +
+    scale_fill_manual(values = c("n" = "black", "d" = "white")) +
+    scale_x_continuous(limits = c(-.5,24.5), breaks = seq(0,24,6), expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    geom_errorbar(aes(ymin = means-se, ymax=means+se), 
+                  width = 0.2) + 
+    theme_classic(base_size = 15) + 
+    theme(legend.position = "none") + 
+    labs(x = "Hours", 
+         y = "Normalized feeding activity") 
+}
+
 
 # function to calculate the volume of food individual flies consumed in the CAFE assay
       
