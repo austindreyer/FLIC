@@ -895,7 +895,51 @@ combine_days <- function(data, ...)
 }
 
 # function to create day/night plots of 24 hr averaged activity
-scale_y_continuous(expand = c(0, 0))
+> day_meanbehav_plot <- function(data, ymax = 3)
+ {
+   
+   require(ggplot2)
+   
+   # average behavioral tally of each 30 minute bin for each fly
+   mean_data <- aggregate(. ~hours, data = data, mean)
+   
+   # the mean activity across all flies
+   activity_means <- data.frame(hours = mean_data[,1], means = rowMeans(mean_data[,-1]))
+   
+   # add in column for night vs. day bars (to be used as grouping variable when plotting)
+   activity_means$n.d <- c(rep("n", 12), rep("d", 24), rep("n", 12))
+   
+   # standard error function
+   se <- function(x) sqrt(var(x)/length(x))
+   
+   # pull out just the data without the "hours" to calculate standard errors
+   activity_means_fly <- mean_data[,-1]
+   
+   # add standard errors for each binned data group
+   activity_means$se <- apply(activity_means_fly, 1, se)
+   
+   # create the base plotting object for ggplot
+   p <- ggplot(activity_means, aes(hours, means, fill=n.d))
+   
+   # plot the thing, complete with error bars, no background, and axis labels
+   p + 
+     geom_bar(stat = "identity", 
+              colour = "black", 
+              position = position_nudge(x = 0.25)) +
+     scale_fill_manual(values = c("n" = "black", "d" = "white")) +
+     scale_x_continuous(limits = c(-.5,24.5), 
+                        breaks = seq(0,24,6), 
+                        expand = c(0, 0)) +
+     scale_y_continuous(limits = c(0,ymax),
+                        expand = c(0, 0)) +
+     geom_errorbar(aes(ymin = means-se, ymax=means+se), 
+                   width = 0.2,
+                   position = position_nudge(x = 0.25)) + 
+     theme_classic(base_size = 15) + 
+     theme(legend.position = "none") + 
+     labs(x = "Hours", 
+          y = "Normalized feeding activity") 
+ }
 
 
 # function to calculate the volume of food individual flies consumed in the CAFE assay
