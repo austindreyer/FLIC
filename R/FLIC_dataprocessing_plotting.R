@@ -1,5 +1,5 @@
 #### FLIC Raw Data Processing and Plotting ####
-#### updated 9/27/2018 ####
+#### updated 1/3/2019 ####
 
 ## Steps 1 - 9 below describe the process of taking data taken from the laptop
 ## connected to the MCU and making into ClockLab compatable files. Steps 10-11
@@ -424,11 +424,11 @@ source("/Users/your_luc_id/folder_name/subfolder_name/FLIC_hbfunctions.R")
 # 8. wells = the well numbers corresponding to desired genotype
 
 # You must save the output of subset.data() as a new object
-## Ex: genotype1.dfm1 <- subset.data(bin30.dfm1.date, "2018-02-01", 1755, 0900, 2, 7, "norm", 1,2,7,8)
+## Ex: genotype1.dfm1 <- subset.data(bin30.dfm1.date, "2018-02-01", 1755, 0900, 2, 7, "norm", "running", 1,2,7,8)
 
 # If you want the entire experiment's worth of data, use an sday value of 0 and an eday value
 # greater than the total number of days the experiment ran, can be ridiculously high (e.g.100)
-## Ex: genotype1.dfm1 <- subset.data(bin30.dfm1.date, "2018-02-01", 1755, 0900, 0, 100, "norm", 1,2,7,8)
+## Ex: genotype1.dfm1 <- subset.data(bin30.dfm1.date, "2018-02-01", 1755, 0900, 0, 100, "norm", "running", 1,2,7,8)
 
 ### 2 ###
 # Once you have extracted the data for each DFM for each genotype, you then need to combine them by 

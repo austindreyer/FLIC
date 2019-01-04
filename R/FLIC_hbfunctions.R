@@ -895,7 +895,7 @@ combine_days <- function(data, ...)
 }
 
 # function to create day/night plots of 24 hr averaged activity
-> day_meanbehav_plot <- function(data, ymax = 3)
+day_meanbehav_plot <- function(data, yhigh = 3, by = 0.5)
  {
    
    require(ggplot2)
@@ -930,8 +930,10 @@ combine_days <- function(data, ...)
      scale_x_continuous(limits = c(-.5,24.5), 
                         breaks = seq(0,24,6), 
                         expand = c(0, 0)) +
-     scale_y_continuous(limits = c(0,ymax),
-                        expand = c(0, 0)) +
+     scale_y_continuous(limits = c(0,yhigh),
+                        breaks = seq(0, yhigh, by=by), 
+                        labels = seq(0, yhigh, by=by),
+                        expand = c(0,0)) +
      geom_errorbar(aes(ymin = means-se, ymax=means+se), 
                    width = 0.2,
                    position = position_nudge(x = 0.25)) + 
