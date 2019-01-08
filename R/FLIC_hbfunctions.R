@@ -895,7 +895,7 @@ combine_days <- function(data, ...)
 }
 
 # function to create day/night plots of 24 hr averaged activity
-day_meanbehav_plot <- function(data, yhigh = 3, by = 0.5)
+day_meanbehav_plot <- function(data, yhigh = 3, by = 0.5, title)
  {
    
    require(ggplot2)
@@ -927,6 +927,7 @@ day_meanbehav_plot <- function(data, yhigh = 3, by = 0.5)
               colour = "black", 
               position = position_nudge(x = 0.25)) +
      scale_fill_manual(values = c("n" = "black", "d" = "white")) +
+     ggtitle(sprintf("%s",title)) +
      scale_x_continuous(limits = c(-.5,24.5), 
                         breaks = seq(0,24,6), 
                         expand = c(0, 0)) +
@@ -937,8 +938,16 @@ day_meanbehav_plot <- function(data, yhigh = 3, by = 0.5)
      geom_errorbar(aes(ymin = means-se, ymax=means+se), 
                    width = 0.2,
                    position = position_nudge(x = 0.25)) + 
-     theme_classic(base_size = 15) + 
-     theme(legend.position = "none") + 
+     theme_classic(base_size = 15) +
+     theme(axis.line.x = element_line(color="black", size = .5),
+           axis.line.y = element_line(color="black", size = .5),
+           axis.title = element_text(size=18),
+           plot.title = element_text(hjust = 0.5, size = 10),
+           axis.text.x = element_text(size=12),
+           axis.text.y = element_text(size=12),
+           legend.position = "none") +
+     #theme(legend.position = "none") +
+     
      labs(x = "Hours", 
           y = "Normalized feeding activity") 
  }
