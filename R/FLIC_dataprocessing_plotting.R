@@ -1,5 +1,5 @@
 #### FLIC Raw Data Processing and Plotting ####
-#### updated 1/3/2019 ####
+#### updated 2/14/2019 ####
 
 ## Steps 1 - 9 below describe the process of taking data taken from the laptop
 ## connected to the MCU and making into ClockLab compatable files. Steps 10-11
@@ -410,7 +410,7 @@ source("/Users/your_luc_id/folder_name/subfolder_name/FLIC_hbfunctions.R")
 ### 1 ### 
 # Pull out the data of a single genotype by cross-referencing the well 
 # assignments by genotype, and extracting just those wells of data for 
-# each DFM using the function subset.data(). This function requires eight
+# each DFM using the function subset.data(). This function requires nine
 # arguments:
 # 1. data = binned data for a dfm
 # 2. idate = initial day of experiment in "YYYY-MM-DD" format
@@ -421,7 +421,9 @@ source("/Users/your_luc_id/folder_name/subfolder_name/FLIC_hbfunctions.R")
 # 6. eday = end day of data analysis, typically
 # 7. datatype = either "norm" or "nonnorm" for extracting data
 # that is normalized using standard procedure or not
-# 8. wells = the well numbers corresponding to desired genotype
+# 8. hset = the configuration of the time column, either "running" for a continuous
+# vector of time, or "daily" for sets of 24 hour intervals only
+# 9. wells = the well numbers corresponding to desired genotype
 
 # You must save the output of subset.data() as a new object
 ## Ex: genotype1.dfm1 <- subset.data(bin30.dfm1.date, "2018-02-01", 1755, 0900, 2, 7, "norm", "running", 1,2,7,8)
@@ -506,7 +508,7 @@ source("/Users/your_luc_id/folder_name/subfolder_name/FLIC_hbfunctions.R")
 
 # For each DFM, you will have to cross-reference the data with the excel
 # analysis files and remove any wells that include data that was not used
-# in the analysis. To to this, use the function feed.total.dropwell() which
+# in the analysis. To do this, use the function feed.total.dropwell() which
 # requires two arguments: data = the newly created data file from
 # feed.total you need to remove a well from and well = the well number
 # with a W in front of it, all in quotes (e.g. "W11"). This function 
@@ -535,21 +537,29 @@ source("/Users/your_luc_id/folder_name/subfolder_name/FLIC_hbfunctions.R")
 # Now you should have a complete data frame with all of the individual
 # feeding totals in seconds per fly, with the date of their experiment,
 # the dfm they came from, their well assignment, feeding time, and 
-# genotype ready for data analysis by genotype. You can save your product
+# genotype ready for data analysis by genotype. You should save your product
 # in two ways: as a workspace or just the data frame as an excel .csv file.
-# Saving as .csv is easier and less memory, therefore recommended. To do so
-# use the function write.csv() which will produce a .csv file in the 
-# working directory you are in. Two arguments passed to the function, 
-# the file to be written and the file name including the extension type, plus
-# the statement, row.names = FALSE to prevent the row numbers from being passed
-# to the final product
+# Before saving the workspace, it is best to remove all but one of the 
+# large DFM files to cut down on the overall file size, leaving one for 
+# reference should you need to revisit the start time/date of the experiment
+# in the future, and given the values are the same for all DFMs.
+
+# Example: rm(dfm2.date.information.at, dfm3.date.information.at)
+
+# Save the workspace as the standard date notation, with a mention of 
+# feeding duration somewhere (example: 17_0505_dilp2kir2.1_feedsum). 
+# To save as a .csv file use the function write.csv() which will produce 
+# a .csv file in the working directory you are in. Two arguments passed to the 
+# function, the file to be written and the file name including the extension 
+# type, plus the statement, row.names = FALSE to prevent the row numbers from 
+# being passed to the final product. 
 
 # Example: write.csv(ftot.170505.names, "170505_dilp2kir2.1_feedingsum.csv", row.names = FALSE)
 
 # After saving a data frame as a .csv, that data frame can then be read into
 # RStudio by setting your working directory to match the location of the desired
 # .csv and using the function read.csv() with the file name in quotes and 
-# the argument header = TRUE to maintin the names of the column headings. You 
+# the argument header = TRUE to maintain the names of the column headings. You 
 # will also need to specify a new object as the read in data frame to be able 
 # to reference it for analysis
 
@@ -561,4 +571,4 @@ source("/Users/your_luc_id/folder_name/subfolder_name/FLIC_hbfunctions.R")
 matrix(sample(c(1,1,1,1,1,1,2,2,2,2,2,2), replace = FALSE), nrow=2, ncol=6)
 matrix(sample(c(1,1,1,1,2,2,2,2,3,3,3,3), replace = FALSE), nrow=2, ncol=6)
 
-
+sample(c(1,1,1,1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,3,3,4), replace = FALSE)

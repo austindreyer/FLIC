@@ -1,4 +1,4 @@
-## Updated 1/3/19 ##
+## Updated 3/5/19 ##
 
 ######## FLIC HomeBrew Functions ########
 
@@ -317,7 +317,7 @@ test.fun <- function(a, b, ...){
 
 
 ### separate function to truncate binned data to just specific days for comparison
-# only the idate and datatype arguments need be in quotes
+# only the idate, datatype, and hset arguments need be in quotes
 
 subset.data <- function(data, idate, itime, stime, sday, eday, datatype, hset, well, ...){
   
