@@ -1,5 +1,5 @@
 #### FLIC Raw Data Processing and Plotting ####
-#### updated 2/14/2019 ####
+#### updated 3/20/2019 ####
 
 ## Steps 1 - 9 below describe the process of taking data taken from the laptop
 ## connected to the MCU and making into ClockLab compatable files. Steps 10-11
@@ -132,10 +132,10 @@ p <- ParametersClass.SingleWell() # refers to the number of wells included
 # you can observe the parameters currently in use by typing in the variable:
 # p
 
-p <- SetParameter(p,Signal.Threshold = 20) # sets the overall baseline signal
-p <- SetParameter(p,Feeding.Threshold.Value = 85) # sets the minimum mV for a peak to be considered feeding
-p <- SetParameter(p,Feeding.Interval.Minimum = 40) # minimum duration of event to be called feeding
-p <- SetParameter(p,Tasting.Threshold.Interval = c(10,40)) # sets low and high range of time for a mV peak to be a feeding event
+p <- SetParameter(p,Signal.Threshold = 20) # sets the baseline signal that everything of interest must be above
+p <- SetParameter(p,Feeding.Threshold.Value = 85) # sets the minimum mV for a peak to be confirm feeding
+p <- SetParameter(p,Feeding.Interval.Minimum = 40) # minimum mV for event to be a possible feeding
+p <- SetParameter(p,Tasting.Threshold.Interval = c(10,40)) # sets low and high range of time for a mV peak to be a tasting event (independent of feeding)
 
 p <- SetParameter(p,Use.Adaptive.Threshold = TRUE) # turns the adaptive threshold on, FALSE = off
 
@@ -151,10 +151,10 @@ p10 <- ParametersClass.SingleWell() # refers to the number of wells included
 # you can observe the parameters currently in use by typing in the variable:
 # p
 
-p10 <- SetParameter(p10,Signal.Threshold = 2) # sets the overall baseline signal
-p10 <- SetParameter(p10,Feeding.Threshold.Value = 15) # sets the minimum mV for a peak to be considered feeding
-p10 <- SetParameter(p10,Feeding.Interval.Minimum = 5) # minimum duration of event to be called feeding
-p10 <- SetParameter(p10,Tasting.Threshold.Interval = c(2,5)) # sets low and high range of time for a mV peak to be a feeding event
+p10 <- SetParameter(p10,Signal.Threshold = 2) # sets the baseline signal that everything of interest must be above
+p10 <- SetParameter(p10,Feeding.Threshold.Value = 15) # sets the minimum mV for a peak to be confirm feeding
+p10 <- SetParameter(p10,Feeding.Interval.Minimum = 5) # minimum mV for event to be a possible feeding
+p10 <- SetParameter(p10,Tasting.Threshold.Interval = c(2,5)) # sets low and high range of time for a mV peak to be a tasting event (independent of feeding)nt
 p10 <- SetParameter(p10, Feeding.Minevents = 4)
 
 p10 <- SetParameter(p10,Use.Adaptive.Threshold = TRUE) # turns the adaptive threshold on, FALSE = off

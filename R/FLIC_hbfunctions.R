@@ -952,6 +952,24 @@ day_meanbehav_plot <- function(data, yhigh = 3, by = 0.5, title)
           y = "Normalized feeding activity") 
  }
 
+# function to randomize fly location in FLIC monitors
+
+FLIC_random <- function(num_fly = 12, num_gen = 3)
+{
+  groups <- num_fly/num_gen
+  
+  fly_dist <- rep(1:num_gen, each = groups) 
+  
+  if(num_fly > 6) 
+    {
+    matrix(sample(c(fly_dist), replace = FALSE), nrow=2, ncol=6)
+  }
+  else 
+    {
+      matrix(sample(c(fly_dist), replace = FALSE), nrow=1, ncol=6)
+  }
+}
+
 
 # function to calculate the volume of food individual flies consumed in the CAFE assay
       
