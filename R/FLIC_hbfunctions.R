@@ -1,7 +1,7 @@
-## Updated 3/5/19 ##
+##### FLIC HomeBrew Functions #####
+### Updated 4/11/2019 ###
 
-######## FLIC HomeBrew Functions ########
-
+## contains nearly all of the functions used to handle FLIC data ##
 
 # function to reformat all difftime class data to numeric for data binning
 
@@ -1000,3 +1000,20 @@ CAFE_Add <- function(fdist,...)
   return(tot.dist)
 }              
   
+# function to deal with strange NAs in an experiment cropping up
+
+#rm(dfm1.1, dfm1.2, dfm2.1, dfm2.2, dfm3.1, dfm3.2, dfm4.1, dfm4.2, dfm5.1, dfm5.2)
+
+
+#tmp<-FeedingData.Licks(dfm11.190327.at, c(0,0))
+#cname=paste("W",1,sep="")
+#tmp<-tmp[,c("Minutes",cname)]
+#min(tmp)
+
+#dfm12.190327.at$RawData[2288055:2288077,]
+
+#test.na <- which(is.na(tmp$Minutes))
+#where <- which(is.na(tmp$Minutes))
+#tail(where)
+#test.sec <- seq(from =  458922.0, by =.2, length.out = 1418151)
+#test.min <- seq(from =  7648.700, by =.0035, length.out = 1418151)

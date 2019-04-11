@@ -1,5 +1,5 @@
 #### FLIC Raw Data Processing and Plotting ####
-#### updated 3/20/2019 ####
+#### updated 4/11/2019 ####
 
 ## Steps 1 - 9 below describe the process of taking data taken from the laptop
 ## connected to the MCU and making into ClockLab compatable files. Steps 10-11
@@ -211,14 +211,12 @@ FindDataBreaks(dfm1.date.information.at) #example of finding data breaks
 # At this point, you are ready to read in all of the DFM raw data, and then bin the
 # data as desired. Using the adaptive threshold means this process will take between
 # 6-12 hours depending on the computer being used. If using the lab computers, best
-# to set it up to run overnight, which means you MUST unplug the computer from the 
-# ethernet hard-wire internet cord so that the computer cannot remotely restart to 
-# install updates overnight (which the computer will automatically do at 2 am if online)
+# to set it up to run overnight.
 
-# To read in the data en masse, use the objects listed below, adjusting the dates and names
-# as necessary. Copy and paste all of it at once into the working window of RStudio, and then hit 
-# enter. The anaylsis should start, and within a minute or two you should see it counting up by
-# well through the data.
+# To read in the data en masse, use the objects listed in the "Reading_DFMs.R" scriptb adjusting 
+# the dates and names as necessary. Copy and paste all of it at once into the working window of 
+# RStudio, and then hit enter. The anaylsis should start, and within a minute or two you should 
+# see it counting up by well through the data.
 
 # As of R version 3.3 (ish), the DFM class data must first be converted to all 
 # numeric data rather than difftime data, which it will default to as that is
@@ -237,42 +235,7 @@ FindDataBreaks(dfm1.date.information.at) #example of finding data breaks
 # BinFeedingData.Licks()) into a new R script and just to a "Find and Replace"
 # search for the old date (e.g. 180201) replacing it with new one (180505).
 
-dfm1.180201.at <- DFMClass(1,p) # The number here will refer to the DFM_1.csv data that is in the working directory you set at the beginning
-dfm2.180201.at <- DFMClass(2,p)
-dfm3.180201.at <- DFMClass(3,p)
-dfm4.180201.at <- DFMClass(4,p)
-dfm5.180201.at <- DFMClass(5,p)
-
-dfm1.180201.at <- DFMData_numeric(dfm1.180201.at, "at")
-dfm2.180201.at <- DFMData_numeric(dfm2.180201.at, "at")
-dfm3.180201.at <- DFMData_numeric(dfm3.180201.at, "at")
-dfm4.180201.at <- DFMData_numeric(dfm4.180201.at, "at")
-dfm5.180201.at <- DFMData_numeric(dfm5.180201.at, "at")
-
-bin30.dfm1.180201.at  <- BinFeedingData.Licks(dfm1.180201.at,30) # BE SURE YOU CHANGE ALL REFERENCES TO DFM NUMBER in the function BinFeedingData.Licks() and in the object name on the left
-bin30.dfm2.180201.at  <- BinFeedingData.Licks(dfm2.180201.at,30)
-bin30.dfm3.180201.at  <- BinFeedingData.Licks(dfm3.180201.at,30)
-bin30.dfm4.180201.at  <- BinFeedingData.Licks(dfm4.180201.at,30)
-bin30.dfm5.180201.at  <- BinFeedingData.Licks(dfm5.180201.at,30)
-
-dfm6.180201.at <- DFMClass(6,p10) # The number here will refer to the DFM_1 data that is in the working directory you set at the beginning
-dfm7.180201.at <- DFMClass(7,p10)
-dfm8.180201.at <- DFMClass(8,p10)
-dfm9.180201.at <- DFMClass(9,p10)
-dfm10.180201.at <- DFMClass(10,p10)
-
-dfm6.180201.at <- DFMData_numeric(dfm6.180201.at, "at")
-dfm7.180201.at <- DFMData_numeric(dfm7.180201.at, "at")
-dfm8.180201.at <- DFMData_numeric(dfm8.180201.at, "at")
-dfm9.180201.at <- DFMData_numeric(dfm9.180201.at, "at")
-dfm10.180201.at <- DFMData_numeric(dfm10.180201.at, "at")
-
-bin30.dfm6.180201.at  <- BinFeedingData.Licks(dfm6.180201.at,30) # BE SURE YOU CHANGE ALL REFERENCES TO DFM NUMBER in the function BinFeedingData.Licks() and in the object name on the left
-bin30.dfm7.180201.at  <- BinFeedingData.Licks(dfm7.180201.at,30)
-bin30.dfm8.180201.at  <- BinFeedingData.Licks(dfm8.180201.at,30)
-bin30.dfm9.180201.at  <- BinFeedingData.Licks(dfm9.180201.at,30)
-bin30.dfm10.180201.at  <- BinFeedingData.Licks(dfm10.180201.at,30)
-
+######### USE Reading_DFMs.R SCRIPT TO QUICLY READ IN RAW DATA ############
 
 # Once the data has all been read in properly, you should see 1.5X as many objects in the global 
 # environment (top left panel -->) as you read in. One object for each you did read in, and 
@@ -293,7 +256,7 @@ bin30.dfm10.180201.at  <- BinFeedingData.Licks(dfm10.180201.at,30)
 # point you need to save the workspace by selecting "Session" then "Save Workspace As"
 # and use the same naming convention for the workspace name as for the DFM's (e.g. 170201_cycmutant)
 
-#### !!!!!!!! Super Important!!!!!! Chances are that the computer in the lab will run out of memory when
+#### !!!!!!!! Super Important!!!!!! There is a chance the computer in the lab will run out of memory when
 #### performing this set of reading in huge data sets. If that happens, inspect each set of data using
 #### functions below to make sure they are all complete, as often it will give an error but not actually
 #### cut off any of the data. If all data is accounted for, move on. If not, you will have to combine
@@ -564,11 +527,3 @@ source("/Users/your_luc_id/folder_name/subfolder_name/FLIC_hbfunctions.R")
 # to reference it for analysis
 
 # Example: ftot.170505.names <- read.csv("170505_dilp2kir2.1_feedingsum.csv", header=TRUE)
-
-
-# Sample function to randomize genotype placements for FLIC experimental setup
-
-matrix(sample(c(1,1,1,1,1,1,2,2,2,2,2,2), replace = FALSE), nrow=2, ncol=6)
-matrix(sample(c(1,1,1,1,2,2,2,2,3,3,3,3), replace = FALSE), nrow=2, ncol=6)
-
-sample(c(1,1,1,1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,3,3,4), replace = FALSE)
