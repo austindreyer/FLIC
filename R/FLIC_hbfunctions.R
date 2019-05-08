@@ -1,5 +1,5 @@
 ##### FLIC HomeBrew Functions #####
-### Updated 4/11/2019 ###
+### Updated 4/25/2019 ###
 
 ## contains nearly all of the functions used to handle FLIC data ##
 
@@ -359,8 +359,8 @@ for (i in 1:(length(mt[1,])-2)) {
     
   init.date <- as.POSIXlt(sprintf("%s %04d", idate, itime), format = "%Y-%m-%d %H%M")
   start.date <- as.POSIXlt(sprintf("%s %04d", idate, stime), format = "%Y-%m-%d %H%M")
-  start.data <- ((as.numeric(start.date) - as.numeric(init.date)) + (86400*(sday-1)))/3600
-  #end.data <- ((as.numeric(start.date) - as.numeric(init.date)) + (86400*(eday-1)))/3600
+  start.data <- ((as.numeric(start.date) - as.numeric(init.date)) + (86400*(sday)))/3600
+  #end.data <- ((as.numeric(start.date) - as.numeric(init.date)) + (86400*(eday)))/3600
   end.data <- (eday - sday)*48
   
   if (hset == "running")
@@ -382,6 +382,152 @@ for (i in 1:(length(mt[1,])-2)) {
   return(mrmt.sub)
  }
 
+
+## function to plot any phase shifts, by well (=genotype)
+
+phaseshift_indfly_plot <- function(data, idate, itime, etimeS, etimeE, pday, datatype, well, yhigh, by, day_col, title)
+{
+  # call necessary libraries
+  library(stats)
+  library(signal)
+  library(ggplot2)
+  
+  # extact all data starting 6 hours prior to CT0 the first day after FLIC loaded 
+  fly_data <- subset.data(data, idate, itime, etimeS, sday = 0.75, eday = 8, datatype, hset = 'running', well)
+  
+  # create Butterworth filter object
+  bf <- butter(2, 0.1, type = 'low', plane = 'z')
+  
+  # filter fly signal data using Butterworth filter
+  fly_bf <- filtfilt(bf, fly_data[,1])
+  
+  # and add it to fly_data object
+  fly_data$bf <- fly_bf
+  
+  # extract data for just the phase day of interest
+  ## first calculate the window of data to pull based on pday
+  ps <- 48*(pday-1)
+  
+  # then extract the 24 hours of data for desired day
+  fly_pday <- fly_data[(1:48)+ps,]
+  fly_pday[,2] <- rep(seq(0,23.5,0.5))
+  
+  # add column of 'n' and 'd' for plotting
+  fly_pday$n.d <- c(rep("n", 12), rep("d", 24), rep("n", 12))
+  
+  # rename the data column to generic 'fly' for plotting reference to be consistant
+  colnames(fly_pday)[1] <- 'fly'
+  
+  # create the base plotting object for ggplot
+  p <- ggplot()
+  
+  # plot the thing, complete with error bars, no background, and axis labels
+  p + 
+    geom_col(data = fly_pday, 
+             aes(hours, fly, fill=n.d),
+             colour = "black", 
+             position = position_nudge(x = 0.25)) +
+    geom_line(data = fly_pday, aes(hours, bf), 
+              color = 'red') +
+    scale_fill_manual(values = c("n" = "black", "d" = day_col)) +
+    ggtitle(sprintf("%s",title)) +
+    scale_x_continuous(limits = c(-.5,24.5), 
+                       breaks = seq(0,24,6), 
+                       expand = c(0, 0)) +
+    scale_y_continuous(limits = c(0,yhigh),
+                       breaks = seq(0, yhigh, by=by), 
+                       labels = seq(0, yhigh, by=by),
+                       expand = c(0,0)) +
+    theme_classic(base_size = 15) +
+    theme(axis.line.x = element_line(color="black", size = .5),
+          axis.line.y = element_line(color="black", size = .5),
+          axis.title = element_text(size=18),
+          plot.title = element_text(hjust = 0.5, size = 10),
+          axis.text.x = element_text(size=12),
+          axis.text.y = element_text(size=12),
+          legend.position = "none") +
+    labs(x = "Hours", 
+         y = "Feeding activity")
+}
+
+## function to pull out the difference in hours of any phase shifts, by well (=genotype)
+
+phaseshift_indfly_time <- function(data, idate, itime, etimeS, etimeE, pday, datatype, well)
+{
+  # call necessary libraries
+  library(stats)
+  library(signal)
+ 
+  # extact all data starting 6 hours prior to CT0 the first day after FLIC loaded 
+  fly_data <- subset.data(data, idate, itime, etimeS, sday = 0.75, eday = 8, datatype, hset = 'running', well)
+  
+  # create Butterworth filter object
+  bf <- butter(2, 0.1, type = 'low', plane = 'z')
+  
+  # filter fly signal data using Butterworth filter
+  fly_bf <- filtfilt(bf, fly_data[,1])
+  
+  # and add it to fly_data object
+  fly_data$bf <- fly_bf
+  
+  # find the peaks of the filtered data
+  fly_peaks <- find_peaks(fly_bf)
+  
+  # make new object containing the peaks in hours of experiment starting with empty object
+  mt_peaks <- NULL
+  # then populate empty object with data, iterating over each peak
+  for (i in 1:length(fly_peaks))
+  {
+    mt_peaks[i] <- fly_data$hours[fly_peaks[i]]
+  }
+  
+  # extract data for just the phase day of interest
+  ## first calculate the window of data to pull based on pday
+  ps <- 48*(pday-1)
+  
+  # then extract the 24 hours of data for desired day
+  fly_pday <- fly_data[(1:48)+ps,]
+  
+  # add column of just 0-24 hours for reference
+  fly_pday$day <- rep(seq(0,23.5,0.5))
+  
+  # pull out the peaks that match the day of interest
+  pday_peaks <- subset(mt_peaks, mt_peaks > min(fly_pday$hours) & mt_peaks < max(fly_pday$hours))
+  
+  # make empty columns for correct peak data to be added
+  mt_peaks <-  setNames(data.frame(matrix(ncol = 2, nrow = 1)), c("Mpeak", "Epeak"))
+  
+  # and correct them for relative time on the day of interest
+  if (length(pday_peaks) > 1)
+  {
+    mt_peaks[1] <- pday_peaks[1]-fly_pday[13,2]
+    mt_peaks[2] <- pday_peaks[2]-fly_pday[37,2]
+  } else  {
+    mt_peaks[1] <- NA
+    mt_peaks[2] <- pday_peaks[1]-fly_pday[37,2]
+  }
+  
+# return the phase shift for the fly
+  return(mt_peaks)
+}
+
+# function to compile phase shifts in hours for a genotype of a FLIC
+phaseshift_genotype_time <- function(data, idate, itime, etimeS, etimeE, pday, datatype, well, ...)
+{
+  # get the wells to be pulled
+  wells <- c(well, ...)
+  
+  # create empty data frame to store peak data
+  feed_peaks <- setNames(data.frame(matrix(ncol = 2, nrow = length(wells))), c("Mpeak", "Epeak"))
+  
+  # fill data frame with the extracted peaks by DFM
+  for (i in 1:length(wells))
+  {
+    twell <- wells[i]
+    feed_peaks[i,] <- phaseshift_indfly_time(data, idate, itime, etimeS, etimeE, pday, datatype, twell)
+  }
+  return(feed_peaks)
+}
 ## how to remove multiple columns by name (even if same)
 
 # mmt <- mt[ , -which(names(mt) %in% c(names(mt %>% select(contains("hour")))))]

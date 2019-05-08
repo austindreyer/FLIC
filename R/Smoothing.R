@@ -58,3 +58,7 @@ data.bf <- filtfilt(bf, ydata)
 # filtered response as a line using lines() function
 
 lines(xdata, data.bf, col = 'red')
+
+# more info for reference: https://stackoverflow.com/questions/7105962/how-do-i-run-a-high-pass-or-low-pass-filter-on-data-points-in-r/49905340#49905340
+# http://www.cs.sfu.ca/~ggbaker/data-science/content/filtering.html
+# 
