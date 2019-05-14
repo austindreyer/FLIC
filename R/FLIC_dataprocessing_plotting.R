@@ -1,9 +1,9 @@
 #### FLIC Raw Data Processing and Plotting ####
-#### updated 4/11/2019 ####
+#### updated 5/10/2019 ####
 
-## Steps 1 - 9 below describe the process of taking data taken from the laptop
-## connected to the MCU and making into ClockLab compatable files. Steps 10-11
-## describe the process of plotting and extracting total feeding duration per
+## Steps 1 - 9 below describe the process of taking data copied from the laptop
+## connected to the MCU and making it into ClockLab compatable files. Step 10 
+## describes the process of plotting and extracting total feeding duration per
 ## fly. 
 
 ## NOTES: 
@@ -102,7 +102,7 @@ library(reshape2)
 ## The package dplyr needs to be detached and then reloaded after the above
 ## have been loaded to correct for an internal masking problem of required 
 ## functions. To do this, after the above have been loaded, select the 
-## "Packages" tab from the bottomright window, scroll down to dplyr, then
+## "Packages" tab from the bottom-right window, scroll down to dplyr, then
 ## uncheck and recheck the box next to dplyr. You should see confirmation 
 ## of it being detached and reladed in the console below.
 
@@ -230,11 +230,6 @@ FindDataBreaks(dfm1.date.information.at) #example of finding data breaks
 
 # Ex: DFMData_numeric(dfm1.180201.at, "at")
 
-# To ensure all dates have been changed when analyzing multiple dfms at once,
-# best to copy and paste a complete set of objects (e.g. DFMClass() through 
-# BinFeedingData.Licks()) into a new R script and just to a "Find and Replace"
-# search for the old date (e.g. 180201) replacing it with new one (180505).
-
 ######### USE Reading_DFMs.R SCRIPT TO QUICLY READ IN RAW DATA ############
 
 # Once the data has all been read in properly, you should see 1.5X as many objects in the global 
@@ -320,7 +315,7 @@ FindDataBreaks(dfm1.date.information.at) #example of finding data breaks
 source("/Users/your_luc_id/folder_name/subfolder_name/FLIC_hbfunctions.R")
 
 # There are a series of plotting functions in the FLIC_hbfunctions.R
-# file that you will utilize here for data visualization. They are:
+# file that you can use for data visualization. They are:
 # 1. ind.plot() which will produce raw data plots for each fly by DFM
 # 2. norm.plot() which will produce normalized plots for each fly by DFM
 # 3. group.plot() which will produce normalized plots by DFM
