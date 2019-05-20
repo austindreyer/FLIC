@@ -1,5 +1,5 @@
 ##### FLIC HomeBrew Functions #####
-### Updated 4/25/2019 ###
+### Updated 5/20/2019 ###
 
 ## contains nearly all of the functions used to handle FLIC data ##
 
@@ -77,10 +77,8 @@ txtclabdata <- function(data, dfm, edate, name, sdate, stime, interval)
     {
       id <- sprintf('C%d',i)
     }
-    #id <- sprintf('C%d',i)
     namet <- sprintf('%s%s%s%s',edate,name,dfm,id)
     named <- sprintf('%s %s %s %s   %s',edate,name,dfm,id,sdate)
-    #bin <- interval*4
     fill <- c(named, long, interval, stime)
     mt <- list(as.data.frame(data[i+2]))
     mt <- append(fill,mt)
@@ -113,7 +111,8 @@ wells.pull <- function(bin.data, wells, ...)
   return(the.data)
 }
 
-# raw data individual flies by DFM #
+# raw data plots for individual flies by DFM #
+
 ind.plot <- function (data,genotype) {
   mt <- data.frame(matrix(vector(),length(data[,1]),13,
                           dimnames=list(c(),c('hour','w1','w2','w3','w4','w5','w6','w7',
@@ -157,6 +156,9 @@ ind.plot <- function (data,genotype) {
 # amount of behavior for 30 minutes for total experiment
 
 norm.plot <- function (data,genotype) {
+  
+  library(ggplot2)
+  
   mt <- data.frame(matrix(vector(),length(data[,1]),13,
                           dimnames=list(c(),c('hour','w1','w2','w3','w4','w5','w6','w7',
                                               'w8','w9','w10','w11','w12'))),stringsAsFactors = F)  
@@ -201,6 +203,9 @@ sem <- function(x) {
 }
 
 group.plot <- function (data,genotype) {
+  
+  library(ggplot2)
+  
   mt <- data.frame(matrix(vector(),length(data[,1]),13,
                           dimnames=list(c(),c('hour','w1','w2','w3','w4','w5','w6','w7',
                                               'w8','w9','w10','w11','w12'))),stringsAsFactors = F)  
@@ -262,6 +267,9 @@ group.plot <- function (data,genotype) {
 # data <- cbind(data,select(data,W1:W12)) example of how to create data frame of desired data
 
 genotype.plot <- function (data,genotype) {
+  
+  library(ggplot2)
+  
   mt <- data.frame(matrix(vector(),length(data[,1]),length(data[1,])-2))  
   
   mt$hour <- round_any(data$Min/60,0.5)
@@ -288,9 +296,7 @@ genotype.plot <- function (data,genotype) {
   for (i in 1:length(mmt[,1])){
     mrmt$se[i] <- sem(mmt[i,])
     
-    
   }
-  
   
   ggplot(mrmt, aes(x=hour,y=mean)) + 
     geom_line() + 
@@ -306,14 +312,6 @@ genotype.plot <- function (data,genotype) {
           axis.title = element_text(size=18),
           axis.text.x = element_text(size=12))
 }
-
-## Working to get a proper script running
-test.fun <- function(a, b, ...){
-     it <- c(a,b,...)
-     itt <-  paste0("W", it)
-     
-       return(itt)
-   }
 
 
 ### separate function to truncate binned data to just specific days for comparison
@@ -573,15 +571,6 @@ genotype.means <- function(data, ...)
 }
 
 
-## function to take subset data and clean it up for plotting
-
-subdata.clean <- function(data, ...)
-{
-  
-}
-
-
-
 ### modification of genotype.plot() function to make plots special for pub
 
 genotype.plot.fig <- function (data, title, genotypecol, size=1.5, shape=21, low=0, high=4, by=1, ribbon=T) 
@@ -722,7 +711,6 @@ Feeding_Events_Plot_Well <- function(data, datatype, well, start_min = 0, end_mi
   else
     {
   #plot just the raw data if no feeding events took place (i.e. dead fly)
-      
     plot.title <- deparse(substitute(data))
       
     ggplot(plot.sub, aes(x = Minutes, y = plot.sub[,well.plot])) +
@@ -1139,27 +1127,4 @@ CAFE_Feed_Bottle <- function(vol, sdist, fdist, evap, flies)
   
   return(fly.feed)
 }
-# function to add feeding measurements of individual capillary tubes for CAFE assay
-CAFE_Add <- function(fdist,...)
-{
-  tot.dist <- sum(fdist,...)
-  return(tot.dist)
-}              
-  
-# function to deal with strange NAs in an experiment cropping up
 
-#rm(dfm1.1, dfm1.2, dfm2.1, dfm2.2, dfm3.1, dfm3.2, dfm4.1, dfm4.2, dfm5.1, dfm5.2)
-
-
-#tmp<-FeedingData.Licks(dfm11.190327.at, c(0,0))
-#cname=paste("W",1,sep="")
-#tmp<-tmp[,c("Minutes",cname)]
-#min(tmp)
-
-#dfm12.190327.at$RawData[2288055:2288077,]
-
-#test.na <- which(is.na(tmp$Minutes))
-#where <- which(is.na(tmp$Minutes))
-#tail(where)
-#test.sec <- seq(from =  458922.0, by =.2, length.out = 1418151)
-#test.min <- seq(from =  7648.700, by =.0035, length.out = 1418151)
