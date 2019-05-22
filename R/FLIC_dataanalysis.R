@@ -1,5 +1,5 @@
 #### FLIC Data Analysis ####
-#### updated 5/8/2018 ####
+#### updated 5/22/2019 ####
 
 ## Steps 1 -  below describe the process of analyzing data produced using the 
 ## script for FLIC_dataprocessing_plotting. Data analysis here is kept to the
@@ -128,6 +128,30 @@ memory.limit(99999999)
 # ANOVAs are statistical tests to compare three or more groups together. To compare two groups, 
 # you should use a t.test
 
+# When doing ANOVA, also important to do the multiple comparisons test between all groups using
+# Tukey's Honest Significant Difference test. This will provide a statistical test of differences
+# between each group by doing a pairwise comparison of all possible combinations. You will use
+# the ANOVA object created in the Tukey function
+
+# Ex: TukeyHSD(test.aov)
+
+
+# Output will look something like this:
+
+################################################################################################
+# > TukeyHSD(test.aov)                                                                         #
+# Tukey multiple comparisons of means                                                          #
+# 95% family-wise confidence level                                                             #
+#                                                                                              #
+# Fit: aov(formula = Power ~ Genotype, data = data)                                            #
+#                                                                                              #
+#                                                                                              #
+#  $Genotype                                      diff        lwr        upr       p adj       #                                                       
+# SIFA3 x SIFD2-SIFA3 x Iso                       -33.347436 -51.948499 -14.746373 0.0001253   #
+# SIFA3 x SIFD2/cyo;SIF(1-4)/TM6,Sb-SIFA3 x Iso    -9.721237 -28.205678   8.763203 0.4271465   #
+# SIFA3 x SIFD2/cyo;SIF(1-4)/TM6,Sb-SIFA3 x SIFD2  23.626199   5.141758  42.110639 0.0083054   #
+#                                                                                              #
+################################################################################################
 
 ####### 6 #######
 
