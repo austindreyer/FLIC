@@ -838,7 +838,7 @@ newbin <- function(dfm,binsize.min,range=c(0,0)){
   result  
 }
 
-#bin.dfm.data <- BinFeedingData.Events()
+# bin.dfm.data <- BinFeedingData.Events()
 
 # extracts the total feeding time in seconds for a DFM by 
 # entering the raw dfm data, initial date and time of when
@@ -984,8 +984,7 @@ function(id,parameters) {
     file<-paste("DFM_",id,".csv",sep="")
     dfm<-read.csv(file,header=TRUE)  
     
-    ## Get Minutes from Sample column only if ElapsedTime is not
-    ## there
+    ## Get Minutes from Sample column only if ElapsedTime is not there
     if('Seconds' %in% colnames(dfm)) {
       Minutes<-dfm$Seconds/60
       dfm<-data.frame(Minutes,dfm)
