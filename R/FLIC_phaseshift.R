@@ -1,30 +1,76 @@
 #### FLIC_phaseshift ####
-### last updated 5/22/2019 ###
-
+### last updated 5/30/2019 ###
 
 # To look for a phaseshift in the timing of behavioral events, can both plot the data to see and 
 # extract the differences in hours of peak activity for each fly as compared to zeitgeber time
 # which is typically lights on/off
 
+#### Plotting of individual phase shifts ####
 # To plot the data, use the function phaseshift_indfly_plot() which will plot the one day of data
 # as dictated by you. phaseshift_indfly_plot() includes the following arguments:
-# function(data, idate, itime, etimeS, etimeE, pday, datatype, well, yhigh, by, day_col, title)
+# function(data, idate, itime, etimeS, etimeE, pday, eday, datatype, well, yhigh, by, day_col, title)
 #  1. data = binned data for a DFM
 #  2. idate = initial day of experiment in "YYYY-MM-DD" format
 #  3. itime = starting time of experiment in miltary time with no colon
 #  4. etimeS = the start of entrainment time (e.g. lights on)
 #  5. etimeE = the end of entrainment time (e.g. lights off)
 #  6. pday = the day of data you want to plot
-#  7. datatype = either "norm" or "nonnorm" for extracting data
+#  7. eday = the last day of data collected
+#  8. datatype = either "norm" or "nonnorm" for extracting data
 #  that is normalized using standard procedure or not
-#  8. well = well that you want to plot (1-12)
-#  9. yhigh = max Y axis value
-#  10. by = tick marks 
-#  11. day_col = color of the "daytime", 'white' if actual lights on, 'grey20' if subjective day
-#  12. title = name of the data in quotes 'title here'
+#  9. well = well that you want to plot (1-12)
+#  10. yhigh = max Y axis value
+#  11. by = tick marks 
+#  12. day_col = color of the "daytime", 'white' if actual lights on, 'grey70' if subjective day
+#  13. title = name of the data in quotes 'title here'
 
 # Ex: phaseshift_indfly_plot(bin30.dfm1.data, '2018-02-01', 1755, 0900, 2100, 3, 'norm', 1, 10, 2, 'gray20', 'title')
 
+#### Extracting individual phaseshifts from morning and evening environmental transitions ####
+# To look at the actual numerical differences in peak activity use function phaseshift_indfly_time() which
+# will give the phase shift in hours of a single fly for morning (M) and evening (E) transition. Function
+# includes the following arguments: <- function(data, genotype, idate, itime, etimeS, etimeE, pday, eday, datatype, well)
+#  1. data = binned data for DFM
+#  2. genotype = genotype of fly in quotes
+#  3. idate = initial day of experiment in "YYYY-MM-DD" format
+#  4. itime = starting time of experiment in miltary time with no colon
+#  5. etimeS = the start of entrainment time (e.g. lights on)
+#  6. etimeE = the end of entrainment time (e.g. lights off)
+#  7. pday = the day of data you want to plot
+#  8. eday = the last day of data collected
+#  9. datatype = either "norm" or "nonnorm" for extracting data
+#  that is normalized using standard procedure or not
+#  10. well = well that you want data for (1-12)
 
-# To look at the actual numerical differences in peak activity, 
+# Ex: fly1_PS <- phaseshift_indfly_time(bin30.dfm1.data, 'genotype', 2018-02-01', 1755, 0900, 2100, 3, 7, 'norm', 1)
+
+#### Extracting genotype wide phaseshifts from morning and evening environmental transistions ####
+# To pull out the numerical differences in peak activity use function phaseshift_genotype_time() 
+# which will produce a table of values for each fly in a genotype from a single DFM. Deviation 
+# uses the above individual fly time function, but compiles across multiple flies in a DFM. Uses
+# almost the same syntax except for final argument: function(data, genotype, idate, itime, etimeS, etimeE, pday, eday, datatype, well, ...)
+#  1. data = binned data for DFM
+#  2. genotype = genotype of fly
+#  3. idate = initial day of experiment in "YYYY-MM-DD" format
+#  4. itime = starting time of experiment in miltary time with no colon
+#  5. etimeS = the start of entrainment time (e.g. lights on)
+#  6. etimeE = the end of entrainment time (e.g. lights off)
+#  7. pday = the day of data you want to plot
+#  8. eday = the last day of data collected
+#  9. datatype = either "norm" or "nonnorm" for extracting data
+#  that is normalized using standard procedure or not
+#  10. well = set of wells that you want data for with commas separating (1-12)
+
+#  Ex: DFM1_genotype1_PS <- phaseshift_genotype_time(bin30.dfm1.data, 'genotype', 2018-02-01', 1755, 0900, 2100, 3, 7, 'norm', 1,5,8,10)
+
+#### Analysis ####
+
+# To analyze phaseshift data, will need to extract all the deviations from environmental conditions
+# across all DFMs using the phaseshift_genotype_time() function, and then combine them to make a single
+# table for each genotype. Easiest to do this using the bind_rows() function from dplyr (part of tidyverse package)
+
+# Ex: phaseshift_all <- bind_rows(DFM1_genotype1, DFM2_genotype1, ...)
+
+# Once all data is combined, can run an ANOVA on it
+
 

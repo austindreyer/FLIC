@@ -9,7 +9,25 @@ test.fun <- function(a, b, ...){
   return(itt)
 }
 
+## how to remove multiple columns by name (even if same)
 
+# mmt <- mt[ , -which(names(mt) %in% c(names(mt %>% select(contains("hour")))))]
+
+## Calculating genotype means script
+
+# mmt <- subset(mt, select = -c(hour))
+
+# mmt <- Filter(function(x) !all(is.na(x)), mmt)
+
+# mrmt <- data.frame(matrix(vector(),length(mmt[,1]),3,
+#                          dimnames=list(c(),c('hour','mean','se'))),
+#                   stringsAsFactors = F)
+# mrmt$hour <- mt$hour
+# mrmt$mean <- rowMeans(mmt)
+
+# for (i in 1:length(mmt[,1])){
+#   mrmt$se[i] <- sem(mmt[i,])
+# }
 
 
 ## function to take subset data and clean it up for plotting

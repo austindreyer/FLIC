@@ -383,7 +383,7 @@ for (i in 1:(length(mt[1,])-2)) {
 
 ## function to plot any phase shifts, by well (=genotype)
 
-phaseshift_indfly_plot <- function(data, idate, itime, etimeS, etimeE, pday, datatype, well, yhigh, by, day_col, title)
+phaseshift_indfly_plot <- function(data, idate, itime, etimeS, etimeE, pday, eday, datatype, well, yhigh, by, day_col, title)
 {
   # call necessary libraries
   library(stats)
@@ -391,7 +391,7 @@ phaseshift_indfly_plot <- function(data, idate, itime, etimeS, etimeE, pday, dat
   library(ggplot2)
   
   # extact all data starting 6 hours prior to CT0 the first day after FLIC loaded 
-  fly_data <- subset.data(data, idate, itime, etimeS, sday = 0.75, eday = 8, datatype, hset = 'running', well)
+  fly_data <- subset.data(data, idate, itime, etimeS, sday = 0.75, eday, datatype, hset = 'running', well)
   
   # create Butterworth filter object
   bf <- butter(2, 0.1, type = 'low', plane = 'z')
@@ -450,14 +450,14 @@ phaseshift_indfly_plot <- function(data, idate, itime, etimeS, etimeE, pday, dat
 
 ## function to pull out the difference in hours of any phase shifts, by well (=genotype)
 
-phaseshift_indfly_time <- function(data, idate, itime, etimeS, etimeE, pday, datatype, well)
+phaseshift_indfly_time <- function(data, genotype, idate, itime, etimeS, etimeE, pday, eday, datatype, well)
 {
   # call necessary libraries
   library(stats)
   library(signal)
  
   # extact all data starting 6 hours prior to CT0 the first day after FLIC loaded 
-  fly_data <- subset.data(data, idate, itime, etimeS, sday = 0.75, eday = 8, datatype, hset = 'running', well)
+  fly_data <- subset.data(data, idate, itime, etimeS, sday = 0.75, eday, datatype, hset = 'running', well)
   
   # create Butterworth filter object
   bf <- butter(2, 0.1, type = 'low', plane = 'z')
@@ -493,7 +493,7 @@ phaseshift_indfly_time <- function(data, idate, itime, etimeS, etimeE, pday, dat
   pday_peaks <- subset(mt_peaks, mt_peaks > min(fly_pday$hours) & mt_peaks < max(fly_pday$hours))
   
   # make empty columns for correct peak data to be added
-  mt_peaks <-  setNames(data.frame(matrix(ncol = 2, nrow = 1)), c("Mpeak", "Epeak"))
+  mt_peaks <-  setNames(data.frame(matrix(ncol = 3, nrow = 1)), c("Mpeak", "Epeak", "genotype"))
   
   # and correct them for relative time on the day of interest
   if (length(pday_peaks) > 1)
@@ -505,46 +505,115 @@ phaseshift_indfly_time <- function(data, idate, itime, etimeS, etimeE, pday, dat
     mt_peaks[2] <- pday_peaks[1]-fly_pday[37,2]
   }
   
+  mt_peaks[3] <- genotype
+  
 # return the phase shift for the fly
   return(mt_peaks)
 }
 
 # function to compile phase shifts in hours for a genotype of a FLIC
-phaseshift_genotype_time <- function(data, idate, itime, etimeS, etimeE, pday, datatype, well, ...)
+phaseshift_genotype_time <- function(data, genotype, idate, itime, etimeS, etimeE, pday, eday, datatype, well, ...)
 {
   # get the wells to be pulled
   wells <- c(well, ...)
   
   # create empty data frame to store peak data
-  feed_peaks <- setNames(data.frame(matrix(ncol = 2, nrow = length(wells))), c("Mpeak", "Epeak"))
+  feed_peaks <- setNames(data.frame(matrix(ncol = 3, nrow = length(wells))), c("Mpeak", "Epeak", "genotype"))
   
   # fill data frame with the extracted peaks by DFM
   for (i in 1:length(wells))
   {
     twell <- wells[i]
-    feed_peaks[i,] <- phaseshift_indfly_time(data, idate, itime, etimeS, etimeE, pday, datatype, twell)
+    feed_peaks[i,] <- phaseshift_indfly_time(data, genotype, idate, itime, etimeS, etimeE, pday, eday, datatype, twell)
   }
   return(feed_peaks)
 }
-## how to remove multiple columns by name (even if same)
 
-# mmt <- mt[ , -which(names(mt) %in% c(names(mt %>% select(contains("hour")))))]
+# function to extract data needed for calculation of anticipation index
+AI_index_prep <- function(data, idate, itime, etimeS, pday, eday, well, ...)
+{
+  # extract all of the data for experiment starting 6 hours before entrainment time for calculations
+  fly_data <- subset.data(data, idate, itime, etimeS, sday = 0.75, eday, "nonnorm", hset = 'running', well, ...)
+  
+  # extract data for just the phase day of interest
+  ## first calculate the window of data to pull based on pday
+  ps <- 48*(pday-1)
+  
+  # then extract the 24 hours of data for desired day
+  fly_pday <- fly_data[(1:48)+ps,]
+  
+  # add column of just 0-24 hours for reference
+  fly_pday$day <- rep(seq(0,23.5,0.5))
+  
+  return(fly_pday)
+}
 
-## Calculating genotype means script
+# function to calculate the anticipation index activity prior to environmental sift (as described in Stoleru et al. 2004)
+AI_index <- function(etimeS, etimeE, genotype, data, ...)
+{
 
-# mmt <- subset(mt, select = -c(hour))
+  # calculate genotype averages
+  g_means <- genotype.means(data, ...)
+  
+  # replace hour column with 0-48 for reference
+  g_means[,1] <- rep(seq(0,23.5,0.5))
+  
+  # make empty columns for anticipation index to be added
+  mt_AI <-  setNames(data.frame(matrix(ncol = 3, nrow = 1)), c("M_AI", "E_AI", "genotype"))
+  
+  # calculate the morning anticipation index
+  mt_AI[1] <- ((g_means[12,1]*(g_means[12,1]-g_means[11,1])*(g_means[11,1]-g_means[10,1]))/g_means[14,1])
+  
+  # calculate the hours between the entrainment start and end time
+  e_diff <- ((etimeE-etimeS)/100)*2
+  
+  # calculate the evening anticipation index
+  
+  mt_AI[2] <- ((g_means[12+e_diff,1]*(g_means[12+e_diff,1]-g_means[11+e_diff,1])*(g_means[11+e_diff,1]-g_means[10+e_diff,1]))/g_means[14+e_diff,1])
+  
+  mt_AI[3] <- genotype
+  
+  # return the AI for the genotype
+  return(mt_AI)
+}
 
-# mmt <- Filter(function(x) !all(is.na(x)), mmt)
+# Function to calculate anticipation phase shift (as described in Harrisingh et al. 2007)
+AI_phase_score <- function(data, genotype, idate, itime, etimeS, etimeE, pday, eday, well, ...)
+{
+  # extract all of the data for experiment starting 6 hours before entrainment time for calculations
+  fly_data <- subset.data(data, idate, itime, etimeS, sday = 0.75, eday, "nonnorm", hset = 'running', well, ...)
+  
+  # extract data for just the phase day of interest
+  # first calculate the window of data to pull based on pday
+  ps <- 48*(pday-1)
+  
+  # then extract the 24 hours of data for desired day
+  fly_pday <- fly_data[(1:48)+ps,]
+  
+  # add column of just 0-24 hours for reference
+  fly_pday$day <- rep(seq(0,23.5,0.5))
+  
+  # extract just well data for calculations
+  mmt <- fly_pday[ , which(names(fly_pday) %in% c(names(fly_pday %>% select(contains("W")))))]
+  
+  # create empty data frame to store AI phase scores 
+  mt_phase <-  setNames(data.frame(matrix(ncol = 3, nrow = 1)), c("M_AI_phase", "E_AI_phase", "genotype"))
+  
+  # calculate the hours between the entrainment start and end time
+  e_diff <- ((etimeE-etimeS)/100)*2
+  
+  # calculate AI phase scores
+  for (i in 1:length(mmt))
+       {
+         mt_phase[i,1] <- (sum(mmt[7:11,i]))/(sum(mmt[1:11,i]))
+         mt_phase[i,2] <- (sum(mmt[7:11+e_diff,i]))/(sum(mmt[1:11+e_diff,i]))
+        }
+  
+  mt_phase[3] <- genotype
+  
+  return(mt_phase)
+}
 
-# mrmt <- data.frame(matrix(vector(),length(mmt[,1]),3,
-#                          dimnames=list(c(),c('hour','mean','se'))),
-#                   stringsAsFactors = F)
-# mrmt$hour <- mt$hour
-# mrmt$mean <- rowMeans(mmt)
-
-# for (i in 1:length(mmt[,1])){
-#   mrmt$se[i] <- sem(mmt[i,])
-# }
 
 ## Function to calculate the means of rows of data that has been 
 ## truncated using the subset.data() function, where means of 
