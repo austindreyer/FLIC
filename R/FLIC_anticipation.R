@@ -25,8 +25,8 @@
 #  6. eday = the last day of data collected
 #  7. well, ... = the well numbers of matching genotype, numbers only
 
-#  Ex: DFM1_genotype1_AI <- AI_index_prep(bin30.dfm1.data, '2018-02-01', 1755, 0900, 7, 5,7,11,12)
-#  Ex: DFM2_genotype1_AI <- AI_index_prep(bin30.dfm2.data, '2018-02-01', 1755, 0900, 7, 5,7,11,12)
+#  Ex: genotype1_dfm1_AI <- AI_index_prep(bin30.dfm1.data, '2018-02-01', 1755, 0900, 7, 5,7,11,12)
+#  Ex: genotype1_dfm2_AI <- AI_index_prep(bin30.dfm2.data, '2018-02-01', 1755, 0900, 7, 5,7,11,12)
 
 
 ### 2 ### 
@@ -38,7 +38,7 @@
 #  3. genotype = genotype of fly in quotes
 #  4. data, ... = the objects produced using AI_index_prep() fuction
 
-# Ex: genotype1_AI <- AI_index(0900, 2100, 'genotype1', DFM1_genotype1_AI, DFM2_genotype1_AI)
+# Ex: genotype1_AI <- AI_index(0900, 2100, 'genotype1', genotype1_dfm1_AI, genotype1_dfm2_AI)
 
 
 # Harrisingh Anticipation Phase Score (Harrisingh et al. 2007)
@@ -59,11 +59,11 @@
 #  8. eday = the last day of data collected
 #  9. well, ... = the well numbers of matching genotype, numbers only
 
-# Ex: DFM1_genotype1_AIps <- AI_phase_score(bin30.dfm1.data, 'genotype1', 2018-02-01', 1755, 0900, 2100, 3, 7, 5,7,11,12)
-# Ex: DFM2_genotype1_AIps <- AI_phase_score(bin30.dfm1.data, 'genotype1', 2018-02-01', 1755, 0900, 2100, 3, 7, 5,7,11,12)
+# Ex: genotype1_dfm1_AIps <- AI_phase_score(bin30.dfm1.data, 'genotype1', 2018-02-01', 1755, 0900, 2100, 3, 7, 5,7,11,12)
+# Ex: genotype1_dfm2_AIps <- AI_phase_score(bin30.dfm1.data, 'genotype1', 2018-02-01', 1755, 0900, 2100, 3, 7, 5,7,11,12)
 
 ### 2 ###
 # Then need to combine all calculated AI phase scores for all flies, should be across all genotypes 
 # as that identifier is included in the tables for analysis 
 
-# Ex: AIps_all <- bind_rows(DFM1_genotype1_AIps, DFM2_genotype1_AIps)
+# Ex: AIps_all <- bind_rows(genotype1_dfm1_AIps, genotype1_dfm2_AIps)

@@ -61,7 +61,7 @@
 #  that is normalized using standard procedure or not
 #  10. well = set of wells that you want data for with commas separating (1-12)
 
-#  Ex: DFM1_genotype1_PS <- phaseshift_genotype_time(bin30.dfm1.data, 'genotype', 2018-02-01', 1755, 0900, 2100, 3, 7, 'norm', 1,5,8,10)
+#  Ex: genotype1_dfm1_PS <- phaseshift_genotype_time(bin30.dfm1.data, 'genotype', 2018-02-01', 1755, 0900, 2100, 3, 7, 'norm', 1,5,8,10)
 
 #### Analysis ####
 
@@ -69,7 +69,7 @@
 # across all DFMs using the phaseshift_genotype_time() function, and then combine them to make a single
 # table for each genotype. Easiest to do this using the bind_rows() function from dplyr (part of tidyverse package)
 
-# Ex: phaseshift_all <- bind_rows(DFM1_genotype1, DFM2_genotype1, ...)
+# Ex: phaseshift_all <- bind_rows(genotype1_dfm1_PS, genotype1_dfm2_PS, ...)
 
 # Once all data is combined, can run an ANOVA on it
 
