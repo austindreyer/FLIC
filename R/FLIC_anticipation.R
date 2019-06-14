@@ -25,8 +25,8 @@
 #  6. eday = the last day of data collected
 #  7. well, ... = the well numbers of matching genotype, numbers only
 
-#  Ex: genotype1_dfm1_AI <- AI_index_prep(bin30.dfm1.data, '2018-02-01', 1755, 0900, 7, 5,7,11,12)
-#  Ex: genotype1_dfm2_AI <- AI_index_prep(bin30.dfm2.data, '2018-02-01', 1755, 0900, 7, 5,7,11,12)
+#  Ex: genotype1_dfm1_AI <- AI_index_prep(bin30.dfm1.data, '2018-02-01', 1755, 0900, 7, 8,  5,7,11,12)
+#  Ex: genotype1_dfm2_AI <- AI_index_prep(bin30.dfm2.data, '2018-02-01', 1755, 0900, 7, 8, 5,7,11,12)
 
 
 ### 2 ### 
