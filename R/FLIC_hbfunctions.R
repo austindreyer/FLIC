@@ -600,7 +600,7 @@ AI_phase_score <- function(data, genotype, idate, itime, etimeS, etimeE, pday, e
   mt_phase <-  setNames(data.frame(matrix(ncol = 3, nrow = 1)), c("M_AI_phase", "E_AI_phase", "genotype"))
   
   # calculate the hours between the entrainment start and end time
-  e_diff <- ((etimeE-etimeS)/100)*2
+  e_diff <- abs(((etimeE-etimeS)/100)*2)
   
   # calculate AI phase scores
   for (i in 1:length(mmt))
