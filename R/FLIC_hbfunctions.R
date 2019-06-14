@@ -1,5 +1,5 @@
 ##### FLIC HomeBrew Functions #####
-### Updated 5/20/2019 ###
+### Updated 6/14/2019 ###
 
 ## contains nearly all of the functions used to handle FLIC data ##
 
@@ -357,7 +357,7 @@ for (i in 1:(length(mt[1,])-2)) {
     
   init.date <- as.POSIXlt(sprintf("%s %04d", idate, itime), format = "%Y-%m-%d %H%M")
   start.date <- as.POSIXlt(sprintf("%s %04d", idate, stime), format = "%Y-%m-%d %H%M")
-  start.data <- ((as.numeric(start.date) - as.numeric(init.date)) + (86400*(sday)))/3600
+  start.data <- ((as.numeric(start.date) - as.numeric(init.date)) + (86400*(sday-1)))/3600
   #end.data <- ((as.numeric(start.date) - as.numeric(init.date)) + (86400*(eday)))/3600
   end.data <- (eday - sday)*48
   
@@ -391,7 +391,7 @@ phaseshift_indfly_plot <- function(data, idate, itime, etimeS, etimeE, pday, eda
   library(ggplot2)
   
   # extact all data starting 6 hours prior to CT0 the first day after FLIC loaded 
-  fly_data <- subset.data(data, idate, itime, etimeS, sday = 0.75, eday, datatype, hset = 'running', well)
+  fly_data <- subset.data(data, idate, itime, etimeS, sday = 1.75, eday, datatype, hset = 'running', well)
   
   # create Butterworth filter object
   bf <- butter(2, 0.1, type = 'low', plane = 'z')
@@ -404,7 +404,7 @@ phaseshift_indfly_plot <- function(data, idate, itime, etimeS, etimeE, pday, eda
   
   # extract data for just the phase day of interest
   ## first calculate the window of data to pull based on pday
-  ps <- 48*(pday-1)
+  ps <- 48*(pday-2)
   
   # then extract the 24 hours of data for desired day
   fly_pday <- fly_data[(1:48)+ps,]
@@ -457,7 +457,7 @@ phaseshift_indfly_time <- function(data, genotype, idate, itime, etimeS, etimeE,
   library(signal)
  
   # extact all data starting 6 hours prior to CT0 the first day after FLIC loaded 
-  fly_data <- subset.data(data, idate, itime, etimeS, sday = 0.75, eday, datatype, hset = 'running', well)
+  fly_data <- subset.data(data, idate, itime, etimeS, sday = 1.75, eday, datatype, hset = 'running', well)
   
   # create Butterworth filter object
   bf <- butter(2, 0.1, type = 'low', plane = 'z')
@@ -481,7 +481,7 @@ phaseshift_indfly_time <- function(data, genotype, idate, itime, etimeS, etimeE,
   
   # extract data for just the phase day of interest
   ## first calculate the window of data to pull based on pday
-  ps <- 48*(pday-1)
+  ps <- 48*(pday-2)
   
   # then extract the 24 hours of data for desired day
   fly_pday <- fly_data[(1:48)+ps,]
@@ -533,11 +533,11 @@ phaseshift_genotype_time <- function(data, genotype, idate, itime, etimeS, etime
 AI_index_prep <- function(data, idate, itime, etimeS, pday, eday, well, ...)
 {
   # extract all of the data for experiment starting 6 hours before entrainment time for calculations
-  fly_data <- subset.data(data, idate, itime, etimeS, sday = 0.75, eday, "nonnorm", hset = 'running', well, ...)
+  fly_data <- subset.data(data, idate, itime, etimeS, sday = 1.75, eday, "nonnorm", hset = 'running', well, ...)
   
   # extract data for just the phase day of interest
   ## first calculate the window of data to pull based on pday
-  ps <- 48*(pday-1)
+  ps <- 48*(pday-2)
   
   # then extract the 24 hours of data for desired day
   fly_pday <- fly_data[(1:48)+ps,]
