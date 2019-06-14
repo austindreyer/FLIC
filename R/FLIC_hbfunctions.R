@@ -565,7 +565,7 @@ AI_index <- function(etimeS, etimeE, genotype, data, ...)
   mt_AI[1] <- ((g_means[12,1]*(g_means[12,1]-g_means[11,1])*(g_means[11,1]-g_means[10,1]))/g_means[14,1])
   
   # calculate the hours between the entrainment start and end time
-  e_diff <- ((etimeE-etimeS)/100)*2
+  e_diff <- abs(((etimeE-etimeS)/100)*2)
   
   # calculate the evening anticipation index
   
