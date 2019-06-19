@@ -27,7 +27,7 @@
 # because the data laptops and incubators are not adjusted for daylight savings time. 
 # Other settings for actogram: Tau=24, Bin=30, Type=Scale, and Max=10. When actogram settings are set, use the 
 # "Snipping Tool" to take a screenshot of the left side of the panel, including the file name at the top
-# of the window, and the settings themselves, for future reference should there be any discrepencies for what the 
+# of the window, and the settings themselves, for future reference should there be any discrepancies  for what the 
 # settings were during analysis. This image should be saved in the folder created in step 2
 
 ## Periodogram settings ##
@@ -52,7 +52,7 @@
 
 ## date_genotype tab ##
 # 1 #
-# In the date_genotype tab, you start by filling in the genotypes column (column A), date (column B), and monitors type used for 
+# In the date_genotype tab, you start by filling in the genotypes column (column A), date (column B), and monitor type used for 
 # the experiment (column Q) as either “v2.1” or “Sable”. 
 
 # 2 #
@@ -80,7 +80,7 @@
 
 # Dead flies should be marked as “Dead” in the "Dead column "Fly Status" column of the Excel sheet made in step 2, and their 
 # values in the Period and Power columns (columns N&O) should be deleted. Wells without any data should have their entire row of data 
-# deleted from colmun F to O, but leave the File Name column for future reference of the missing fly. This flies should also 
+# deleted from column F to O, but leave the File Name column for future reference of the missing fly. This flies should also 
 # be marked as "Exclude" in the "Fly Status" column to avoid including them in Rhythm percentage calculation (column P). Wells 
 # that have strange data in actogram (e.g. data gets significantly stronger or weaker over the course of the experiment) should
 # have a short description of the issue added in the "Notes" column (column R) and also be maked as "Exclude" with the values

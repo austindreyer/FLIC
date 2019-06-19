@@ -1,21 +1,37 @@
 #### FLIC_phaseshift ####
-### last updated 5/30/2019 ###
+### last updated 6/18/2019 ###
+
+
+### NEEDED UPDATES: 
+### 3. write loop function for input of index/anticipation function
 
 # To look for a phaseshift in the timing of behavioral events, can both plot the data to see and 
 # extract the differences in hours of peak activity for each fly as compared to zeitgeber time
 # which is typically lights on/off
 
+
+### 1 ###
+# Start by assigning values for shared objects across all analyses, e.g. idate, itime
+# Use the function FLIC_anticipation_objects() to do so, it will prompt user input for all
+# required objects for analysis
+
+### 2 ### 
+# Need to make objects for well assignments for each dfm by genotype. Use function
+# FLIC_well_objects() to create an object for each dfm that can be passed to any
+# of the other FLIC functions in place of wells, ...
+
+
 #### Plotting of individual phase shifts ####
 # To plot the data, use the function phaseshift_indfly_plot() which will plot the one day of data
 # as dictated by you. phaseshift_indfly_plot() includes the following arguments:
-# function(data, idate, itime, etimeS, etimeE, pday, eday, datatype, well, yhigh, by, day_col, title)
+# function(data, idate, itime, etimeS, etimeE, pday, fday, datatype, well, yhigh, by, day_col, title)
 #  1. data = binned data for a DFM
 #  2. idate = initial day of experiment in "YYYY-MM-DD" format
 #  3. itime = starting time of experiment in miltary time with no colon
 #  4. etimeS = the start of entrainment time (e.g. lights on)
 #  5. etimeE = the end of entrainment time (e.g. lights off)
 #  6. pday = the day of data you want to plot
-#  7. eday = the last day of data collected
+#  7. fday = the last day of data collected
 #  8. datatype = either "norm" or "nonnorm" for extracting data
 #  that is normalized using standard procedure or not
 #  9. well = well that you want to plot (1-12)
@@ -29,7 +45,7 @@
 #### Extracting individual phaseshifts from morning and evening environmental transitions ####
 # To look at the actual numerical differences in peak activity use function phaseshift_indfly_time() which
 # will give the phase shift in hours of a single fly for morning (M) and evening (E) transition. Function
-# includes the following arguments: <- function(data, genotype, idate, itime, etimeS, etimeE, pday, eday, datatype, well)
+# includes the following arguments: <- function(data, genotype, idate, itime, etimeS, etimeE, pday, fday, datatype, well)
 #  1. data = binned data for DFM
 #  2. genotype = genotype of fly in quotes
 #  3. idate = initial day of experiment in "YYYY-MM-DD" format
@@ -37,7 +53,7 @@
 #  5. etimeS = the start of entrainment time (e.g. lights on)
 #  6. etimeE = the end of entrainment time (e.g. lights off)
 #  7. pday = the day of data you want to plot
-#  8. eday = the last day of data collected
+#  8. fday = the last day of data collected
 #  9. datatype = either "norm" or "nonnorm" for extracting data
 #  that is normalized using standard procedure or not
 #  10. well = well that you want data for (1-12)
@@ -48,7 +64,7 @@
 # To pull out the numerical differences in peak activity use function phaseshift_genotype_time() 
 # which will produce a table of values for each fly in a genotype from a single DFM. Deviation 
 # uses the above individual fly time function, but compiles across multiple flies in a DFM. Uses
-# almost the same syntax except for final argument: function(data, genotype, idate, itime, etimeS, etimeE, pday, eday, datatype, well, ...)
+# almost the same syntax except for final argument: function(data, genotype, idate, itime, etimeS, etimeE, pday, fday, datatype, well, ...)
 #  1. data = binned data for DFM
 #  2. genotype = genotype of fly
 #  3. idate = initial day of experiment in "YYYY-MM-DD" format
@@ -56,7 +72,7 @@
 #  5. etimeS = the start of entrainment time (e.g. lights on)
 #  6. etimeE = the end of entrainment time (e.g. lights off)
 #  7. pday = the day of data you want to plot
-#  8. eday = the last day of data collected
+#  8. fday = the last day of data collected
 #  9. datatype = either "norm" or "nonnorm" for extracting data
 #  that is normalized using standard procedure or not
 #  10. well = set of wells that you want data for with commas separating (1-12)

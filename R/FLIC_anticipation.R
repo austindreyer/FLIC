@@ -1,5 +1,5 @@
 #### Anticipation behavior ####
-### last updated 5/24/2019 ###
+### last updated 6/18/2019 ###
 
 
 # Stoleru Anticipation Index (Stoleru et al. 2004)
@@ -12,24 +12,33 @@
 # therefore, averaged raw data across a geneotype 
 # must be passed to the anticipation index function.
 
+### 1 ###
+# Start by assigning values for shared objects across all analyses, e.g. idate, itime
+# Use the function FLIC_anticipation_objects() to do so, it will prompt user input for all
+# required objects for analysis
 
-### 1 ### 
+### 2 ### 
+# Need to make objects for well assignments for each dfm by genotype. Use function
+# FLIC_well_objects() to create an object for each dfm that can be passed to any
+# of the other FLIC functions in place of wells, ...
+
+### 3 ### 
 # Create an object of the raw data for each genotype from each DFM
 # using the AI_index_prep() function which includes the following arguments:
-#  function(data, idate, itime, etimeS, pday, eday, well, ...)
+#  function(data, idate, itime, etimeS, pday, fday, well, ...)
 #  1. data = data to be subsetted, binned data only
 #  2. idate = initial day of experiment in "YYYY-MM-DD" format
 #  3. itime = starting time of experiment in miltary time with no colon
 #  4. etimeS = the start of entrainment time (e.g. lights on)
 #  5. pday = the day of data you want to analyze
-#  6. eday = the last day of data collected
+#  6. fday = the last day of data collected
 #  7. well, ... = the well numbers of matching genotype, numbers only
 
 #  Ex: genotype1_dfm1_AI <- AI_index_prep(bin30.dfm1.data, '2018-02-01', 1755, 0900, 7, 8,  5,7,11,12)
 #  Ex: genotype1_dfm2_AI <- AI_index_prep(bin30.dfm2.data, '2018-02-01', 1755, 0900, 7, 8, 5,7,11,12)
 
 
-### 2 ### 
+### 4 ### 
 # Now need to calculate the AI_index by including all the DFM data by genotype using 
 # the AI_index() function which includes the following arguments:
 #  function(etimeS, etimeE, genotype, data, ...)
@@ -48,7 +57,7 @@
 ### 1 ###
 # Need to make an object that calculates the AI phase score for each fly by DFM
 # using the AI_phase_score() function which includes the following arguments:
-# function(data, genotype, idate, itime, etimeS, etimeE, pday, eday, well, ...)
+# function(data, genotype, idate, itime, etimeS, etimeE, pday, fday, well, ...)
 #  1. data = data to be subsetted, binned data only
 #  2. genotype = genotype of fly, in quotes
 #  3. idate = initial day of experiment in "YYYY-MM-DD" format
@@ -56,7 +65,7 @@
 #  5. etimeS = the start of entrainment time (e.g. lights on)
 #  6. etimeE = the end of entrainment time (e.g. lights off)
 #  7. pday = the day of data you want to analyze
-#  8. eday = the last day of data collected
+#  8. fday = the last day of data collected
 #  9. well, ... = the well numbers of matching genotype, numbers only
 
 # Ex: genotype1_dfm1_AIps <- AI_phase_score(bin30.dfm1.data, 'genotype1', 2018-02-01', 1755, 0900, 2100, 3, 7, 5,7,11,12)

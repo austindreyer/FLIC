@@ -383,15 +383,27 @@ for (i in 1:(length(mt[1,])-2)) {
 
 ## function to plot any phase shifts, by well (=genotype)
 
-phaseshift_indfly_plot <- function(data, idate, itime, etimeS, etimeE, pday, eday, datatype, well, yhigh, by, day_col, title)
+phaseshift_indfly_plot <- function(data, idate, itime, etimeS, etimeE, pday, fday, datatype, well, yhigh, by, day_col)
 {
   # call necessary libraries
   library(stats)
   library(signal)
   library(ggplot2)
   
+  # create title for plot
+  thing <- deparse(substitute(data))
+  
+  things <- strsplit(thing, '[.]')
+  
+  res <- lapply(things, function(ch) grep("dfm", ch))
+  
+  out <- things[[1]][res[[1]]]
+  
+  welld <- paste0("W", well)
+  t_name <- paste(out, welld, sep = '_')
+  
   # extact all data starting 6 hours prior to CT0 the first day after FLIC loaded 
-  fly_data <- subset.data(data, idate, itime, etimeS, sday = 1.75, eday, datatype, hset = 'running', well)
+  fly_data <- subset.data(data, idate, itime, etimeS, sday = 1.75, fday, datatype, hset = 'running', well)
   
   # create Butterworth filter object
   bf <- butter(2, 0.1, type = 'low', plane = 'z')
@@ -428,7 +440,7 @@ phaseshift_indfly_plot <- function(data, idate, itime, etimeS, etimeE, pday, eda
     geom_line(data = fly_pday, aes(hours, bf), 
               color = 'red') +
     scale_fill_manual(values = c("n" = "black", "d" = day_col)) +
-    ggtitle(sprintf("%s",title)) +
+    ggtitle(sprintf("%s",t_name)) +
     scale_x_continuous(limits = c(-.5,24.5), 
                        breaks = seq(0,24,6), 
                        expand = c(0, 0)) +
@@ -450,14 +462,26 @@ phaseshift_indfly_plot <- function(data, idate, itime, etimeS, etimeE, pday, eda
 
 ## function to pull out the difference in hours of any phase shifts, by well (=genotype)
 
-phaseshift_indfly_time <- function(data, genotype, idate, itime, etimeS, etimeE, pday, eday, datatype, well)
+phaseshift_indfly_time <- function(data, genotype, idate, itime, etimeS, etimeE, pday, fday, datatype, well)
 {
   # call necessary libraries
   library(stats)
   library(signal)
  
+  thing <- deparse(substitute(data))
+  
+  things <- strsplit(thing, '[.]')
+  
+  res <- lapply(things, function(ch) grep("dfm", ch))
+  
+  out <- things[[1]][res[[1]]]
+  
+  welld <- paste0("W", well)
+  t_name <- paste(out, welld, sep = '_')
+  
+  
   # extact all data starting 6 hours prior to CT0 the first day after FLIC loaded 
-  fly_data <- subset.data(data, idate, itime, etimeS, sday = 1.75, eday, datatype, hset = 'running', well)
+  fly_data <- subset.data(data, idate, itime, etimeS, sday = 1.75, fday, datatype, hset = 'running', well)
   
   # create Butterworth filter object
   bf <- butter(2, 0.1, type = 'low', plane = 'z')
@@ -493,7 +517,7 @@ phaseshift_indfly_time <- function(data, genotype, idate, itime, etimeS, etimeE,
   pday_peaks <- subset(mt_peaks, mt_peaks > min(fly_pday$hours) & mt_peaks < max(fly_pday$hours))
   
   # make empty columns for correct peak data to be added
-  mt_peaks <-  setNames(data.frame(matrix(ncol = 3, nrow = 1)), c("Mpeak", "Epeak", "genotype"))
+  mt_peaks <-  setNames(data.frame(matrix(ncol = 4, nrow = 1)), c("Mpeak", "Epeak", "well", "genotype"))
   
   # and correct them for relative time on the day of interest
   if (length(pday_peaks) > 1)
@@ -505,14 +529,15 @@ phaseshift_indfly_time <- function(data, genotype, idate, itime, etimeS, etimeE,
     mt_peaks[2] <- pday_peaks[1]-fly_pday[37,2]
   }
   
-  mt_peaks[3] <- genotype
+  mt_peaks[3] <- t_name
+  mt_peaks[4] <- genotype
   
 # return the phase shift for the fly
   return(mt_peaks)
 }
 
 # function to compile phase shifts in hours for a genotype of a FLIC
-phaseshift_genotype_time <- function(data, genotype, idate, itime, etimeS, etimeE, pday, eday, datatype, well, ...)
+phaseshift_genotype_time <- function(data, genotype, idate, itime, etimeS, etimeE, pday, fday, datatype, well, ...)
 {
   # get the wells to be pulled
   wells <- c(well, ...)
@@ -524,16 +549,31 @@ phaseshift_genotype_time <- function(data, genotype, idate, itime, etimeS, etime
   for (i in 1:length(wells))
   {
     twell <- wells[i]
-    feed_peaks[i,] <- phaseshift_indfly_time(data, genotype, idate, itime, etimeS, etimeE, pday, eday, datatype, twell)
+    feed_peaks[i,] <- phaseshift_indfly_time(data, genotype, idate, itime, etimeS, etimeE, pday, fday, datatype, twell)
   }
   return(feed_peaks)
 }
 
 # function to extract data needed for calculation of anticipation index
-AI_index_prep <- function(data, idate, itime, etimeS, pday, eday, well, ...)
+AI_index_prep <- function(data, idate, itime, etimeS, pday, fday, well, ...)
 {
   # extract all of the data for experiment starting 6 hours before entrainment time for calculations
-  fly_data <- subset.data(data, idate, itime, etimeS, sday = 1.75, eday, "nonnorm", hset = 'running', well, ...)
+  fly_data <- subset.data(data, idate, itime, etimeS, sday = 1.75, fday, "nonnorm", hset = 'running', well, ...)
+  
+  # create well names for reference
+  wells <- c(well, ...)
+  
+  thing <- deparse(substitute(data))
+  
+  things <- strsplit(thing, '[.]')
+  
+  res <- lapply(things, function(ch) grep("dfm", ch))
+  
+  out <- things[[1]][res[[1]]]
+  
+  welld <- paste0("W", wells)
+  c_name <- paste(out, welld, sep = '_')
+  c_names <- c(c_name, "hours", "day")
   
   # extract data for just the phase day of interest
   ## first calculate the window of data to pull based on pday
@@ -545,13 +585,14 @@ AI_index_prep <- function(data, idate, itime, etimeS, pday, eday, well, ...)
   # add column of just 0-24 hours for reference
   fly_pday$day <- rep(seq(0,23.5,0.5))
   
+  colnames(fly_pday) <- c_names
   return(fly_pday)
 }
 
-# function to calculate the anticipation index activity prior to environmental sift (as described in Stoleru et al. 2004)
+# function to calculate the anticipation index activity prior to environmental shift (as described in Stoleru et al. 2004)
 AI_index <- function(etimeS, etimeE, genotype, data, ...)
 {
-
+  
   # calculate genotype averages
   g_means <- genotype.means(data, ...)
   
@@ -571,17 +612,33 @@ AI_index <- function(etimeS, etimeE, genotype, data, ...)
   
   mt_AI[2] <- ((g_means[12+e_diff,1]*(g_means[12+e_diff,1]-g_means[11+e_diff,1])*(g_means[11+e_diff,1]-g_means[10+e_diff,1]))/g_means[14+e_diff,1])
   
-  mt_AI[3] <- genotype
+  mt_AI[3] <- c_names
+  mt_AI[4] <- genotype
   
   # return the AI for the genotype
   return(mt_AI)
 }
 
 # Function to calculate anticipation phase shift (as described in Harrisingh et al. 2007)
-AI_phase_score <- function(data, genotype, idate, itime, etimeS, etimeE, pday, eday, well, ...)
+AI_phase_score <- function(data, genotype, idate, itime, etimeS, etimeE, pday, fday, well, ...)
 {
+  
+  # create well names for reference
+  wells <- c(well, ...)
+  
+  thing <- deparse(substitute(data))
+  
+  things <- strsplit(thing, '[.]')
+  
+  res <- lapply(things, function(ch) grep("dfm", ch))
+  
+  out <- things[[1]][res[[1]]]
+  
+  welld <- paste0("W", wells)
+  c_name <- paste(out, welld, sep = '_')
+  
   # extract all of the data for experiment starting 6 hours before entrainment time for calculations
-  fly_data <- subset.data(data, idate, itime, etimeS, sday = 0.75, eday, "nonnorm", hset = 'running', well, ...)
+  fly_data <- subset.data(data, idate, itime, etimeS, sday = 0.75, fday, "nonnorm", hset = 'running', well, ...)
   
   # extract data for just the phase day of interest
   # first calculate the window of data to pull based on pday
@@ -597,7 +654,7 @@ AI_phase_score <- function(data, genotype, idate, itime, etimeS, etimeE, pday, e
   mmt <- fly_pday[ , which(names(fly_pday) %in% c(names(fly_pday %>% select(contains("W")))))]
   
   # create empty data frame to store AI phase scores 
-  mt_phase <-  setNames(data.frame(matrix(ncol = 3, nrow = 1)), c("M_AI_phase", "E_AI_phase", "genotype"))
+  mt_phase <-  setNames(data.frame(matrix(ncol = 4, nrow = 1)), c("M_AI_phase", "E_AI_phase", "well", "genotype"))
   
   # calculate the hours between the entrainment start and end time
   e_diff <- abs(((etimeE-etimeS)/100)*2)
@@ -607,9 +664,10 @@ AI_phase_score <- function(data, genotype, idate, itime, etimeS, etimeE, pday, e
        {
          mt_phase[i,1] <- (sum(mmt[7:11,i]))/(sum(mmt[1:11,i]))
          mt_phase[i,2] <- (sum(mmt[7:11+e_diff,i]))/(sum(mmt[1:11+e_diff,i]))
-        }
+  }
   
-  mt_phase[3] <- genotype
+  mt_phase[3] <- c_name
+  mt_phase[4] <- genotype
   
   return(mt_phase)
 }
@@ -1170,6 +1228,104 @@ FLIC_random <- function(num_fly = 12, num_gen = 3)
     {
       matrix(sample(c(fly_dist), replace = FALSE), nrow=1, ncol=6)
   }
+}
+
+FLIC_well_objects <- function(dfm, genotype, wells, ...) 
+{
+  
+  wells
+  wells <- c(wells, ...)
+  #well.des <- paste0("W",wells)
+  
+  for (i in 1:(length(wells))) 
+  {
+    name <- paste(genotype, dfm, 'wells', sep = '_')
+    assign(name, wells, envir = .GlobalEnv)
+  }
+}
+
+# function to assign object values for FLIC analysis functions
+
+FLIC_objects <- function()
+{
+  # warning about overwriting old objects
+  invisible(readline(prompt=" WARNING: this function will write values for R objects to the global environment,
+                     overwriting anything with the same name.
+                     Press [enter] to continue
+                     Press [esc] to exit"))
+  
+  # initial date of experiment
+  initial_date <- readline('Enter value of idate in yyyy-mm-dd format: ')
+  assign('idate', initial_date, envir = .GlobalEnv)
+  
+  # start time of total experiment 
+  initial_time <- readline('Enter value of itime (start time of experiment) in military time: ')
+  initial_time <- as.numeric(initial_time)
+  assign('itime', initial_time, envir = .GlobalEnv)
+  
+  # entrainment start time
+  entrain_time <- readline('Enter value of stime (beginning of entrainment schedule) in military time: ')
+  entrain_time <- as.numeric(entrain_time)
+  assign('stime', entrain_time, envir = .GlobalEnv)
+  
+  # first day of data desired for analysis
+  start_day <- readline('Enter value of start day for data analysis: ')
+  start_day <- as.numeric(start_day)
+  assign('sday', start_day, envir = .GlobalEnv)
+  
+  # last day of data desired for analysis
+  end_day <- readline('Enter value of last day for data analysis: ')
+  end_day <- as.numeric(end_day)
+  assign('eday', end_day, envir = .GlobalEnv)
+  
+  # the type of data to extract
+  d_type <- readline('Enter the type of data to extract, norm or nonnorm: ')
+  assign('datatype', d_type, envir = .GlobalEnv)
+  
+  # the time scale to use
+  h_set <- readline('Enter the timescale desired, either continuous hours (running) or sets of 24 hours (daily): ')
+  assign('hset', h_set, envir = .GlobalEnv)
+  
+}
+
+
+FLIC_anticipation_objects <- function()
+{
+  # warning about overwriting old objects
+  invisible(readline(prompt=" WARNING: this function will write values for R objects to the global environment,
+                     overwriting anything with the same name.
+                     Press [enter] to continue
+                     Press [esc] to exit"))
+  
+  # initial date of experiment
+  initial_date <- readline('Enter value of idate in yyyy-mm-dd format: ')
+  assign('idate', initial_date, envir = .GlobalEnv)
+  
+  # start time of total experiment 
+  initial_time <- readline('Enter value of itime (start time of experiment) in military time: ')
+  initial_time <- as.numeric(initial_time)
+  assign('itime', initial_time, envir = .GlobalEnv)
+  
+  # entrainment start time
+  entrain_time <- readline('Enter value of stime (beginning of entrainment schedule) in military time: ')
+  entrain_time <- as.numeric(entrain_time)
+  assign('etimeS', entrain_time, envir = .GlobalEnv)
+  
+  # entrainment end time
+  entrain_timeE <- readline('Enter value of stime (beginning of entrainment schedule) in military time: ')
+  entrain_timeE <- as.numeric(entrain_timeE)
+  assign('etimeE', entrain_timeE, envir = .GlobalEnv)
+  
+  #  day of data desired for analysis
+  start_day <- readline('Enter value of start day for data analysis: ')
+  start_day <- as.numeric(start_day)
+  assign('pday', start_day, envir = .GlobalEnv)
+  
+  # last day of data desired for analysis
+  end_day <- readline('Enter value of last day for data analysis: ')
+  end_day <- as.numeric(end_day)
+  assign('fday', end_day, envir = .GlobalEnv)
+  
 }
 
 
