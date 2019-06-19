@@ -1230,6 +1230,7 @@ FLIC_random <- function(num_fly = 12, num_gen = 3)
   }
 }
 
+<<<<<<< HEAD
 FLIC_well_objects <- function(dfm, genotype, wells, ...) 
 {
   
@@ -1328,6 +1329,31 @@ FLIC_anticipation_objects <- function()
   
 }
 
+=======
+                
+# Function to combine two DFM files that were the result of one being interrupted
+
+FLIC_combine_DFM <- function(data1, data2, file_name)
+{
+  data1_row <- tail(data1, n=1)
+  
+  s_start <- (data1_row$Sample+1) 
+  
+  s_end <- s_start + nrow(data2) - 1
+  
+  s_replace <- c(s_start:s_end)
+  
+  new_dfm <-  data2
+  
+  new_dfm$Sample <- s_replace
+  
+  all_new <- rbind(data1, new_dfm)
+  
+  write.csv(all_new, file_name, row.names = FALSE)
+  
+}
+                
+>>>>>>> 79fa06d31ae24a2227987fa39773a9abb90a08a1
 
 # function to calculate the volume of food individual flies consumed in the CAFE assay
       
