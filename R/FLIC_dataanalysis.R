@@ -98,7 +98,7 @@ memory.limit(99999999)
 # analysis. All of the FLIC data files must be saved as .csv files for them 
 # to be used here. To read in a data file as a new object use the read.csv() function
 
-# Ex: 170505.feedingdata <- read.csv("170505_dilp2kir2.1_feedingsum.csv", header = T)
+# Ex: feedingdata.170505 <- read.csv("170505_dilp2kir2.1_feedingsum.csv", header = T)
 
 ####### 5 #######
 # For all analyses you will be comparing groups of continuous variables (e.g. power) 

@@ -638,7 +638,7 @@ AI_phase_score <- function(data, genotype, idate, itime, etimeS, etimeE, pday, f
   c_name <- paste(out, welld, sep = '_')
   
   # extract all of the data for experiment starting 6 hours before entrainment time for calculations
-  fly_data <- subset.data(data, idate, itime, etimeS, sday = 0.75, fday, "nonnorm", hset = 'running', well, ...)
+  fly_data <- subset.data(data, idate, itime, etimeS, sday = 1.75, fday, "nonnorm", hset = 'running', well, ...)
   
   # extract data for just the phase day of interest
   # first calculate the window of data to pull based on pday
@@ -1230,7 +1230,7 @@ FLIC_random <- function(num_fly = 12, num_gen = 3)
   }
 }
 
-<<<<<<< HEAD
+
 FLIC_well_objects <- function(dfm, genotype, wells, ...) 
 {
   
@@ -1329,7 +1329,6 @@ FLIC_anticipation_objects <- function()
   
 }
 
-=======
                 
 # Function to combine two DFM files that were the result of one being interrupted
 
@@ -1353,7 +1352,6 @@ FLIC_combine_DFM <- function(data1, data2, file_name)
   
 }
                 
->>>>>>> 79fa06d31ae24a2227987fa39773a9abb90a08a1
 
 # function to calculate the volume of food individual flies consumed in the CAFE assay
       
