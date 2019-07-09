@@ -850,7 +850,7 @@ Feeding_Events_Plot_Well <- function(data, datatype, well, start_min = 0, end_mi
 # Function to create paneled plots for all 12 wells comparing
 # raw data and feeding events
 
-Feeding_Events_DFMPlots <- function(data, start_min = 0, end_min = 100000)
+Feeding_Events_DFMPlots <- function(data, datatype, start_min = 0, end_min = 100000)
 {
   
   require(gridExtra)
