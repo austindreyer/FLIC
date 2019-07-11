@@ -89,7 +89,7 @@ FLIC_objects <- function()
 }
 
 
-Anticipation_objects <- function()
+FLIC_anticipation_objects <- function()
 {
   # warning about overwriting old objects
   invisible(readline(prompt=" WARNING: this function will write values for R objects to the global environment,
@@ -129,5 +129,9 @@ Anticipation_objects <- function()
 }
 
 # function to loop analysis functions over a set of data
+
+# way to create file names 
+files <- lapply(1:4, function(x){paste0("bin30.dfm", x, ".at")})
+                
 
 genotype_apply <- function(genotype, )
