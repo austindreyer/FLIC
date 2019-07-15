@@ -852,7 +852,7 @@ Feeding_Events_Plot_Well <- function(data, datatype, well, start_min = 0, end_mi
 
 Feeding_Events_DFMPlots <- function(data, datatype, start_min = 0, end_min = 100000)
 {
-  
+  require(tidyverse)
   require(gridExtra)
   
   #create empty list to populate with actual plots
@@ -873,6 +873,7 @@ Feeding_Events_DFMPlots <- function(data, datatype, start_min = 0, end_min = 100
   
   #create title for plot
   plot.title <- deparse(substitute(data))
+  
   
   for (i in 1:12)
   {
@@ -928,7 +929,11 @@ Feeding_Events_DFMPlots <- function(data, datatype, start_min = 0, end_min = 100
   
   }
   
-  do.call(grid.arrange, c(plots, top = plot.title))
+  
+  
+  do.call(grid.arrange, c(plots[c(1:6)], top = plot.title))
+  
+  do.call(grid.arrange, c(plots[c(7:12)], top = plot.title))
   
 }
 
@@ -1313,7 +1318,7 @@ FLIC_anticipation_objects <- function()
   assign('etimeS', entrain_time, envir = .GlobalEnv)
   
   # entrainment end time
-  entrain_timeE <- readline('Enter value of stime (beginning of entrainment schedule) in military time: ')
+  entrain_timeE <- readline('Enter value of etime (end of entrainment schedule) in military time: ')
   entrain_timeE <- as.numeric(entrain_timeE)
   assign('etimeE', entrain_timeE, envir = .GlobalEnv)
   

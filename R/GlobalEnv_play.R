@@ -17,6 +17,8 @@ myfunc <- function(data, well) {
 
 things <- deparse(sustitute(data))
 
+
+#function to produce well 
 dfm_wells <- function()
 {
   dfm <- readline('Enter the dfm number (e.g. dfm1): ')
