@@ -603,17 +603,16 @@ AI_index <- function(etimeS, etimeE, genotype, data, ...)
   mt_AI <-  setNames(data.frame(matrix(ncol = 3, nrow = 1)), c("M_AI", "E_AI", "genotype"))
   
   # calculate the morning anticipation index
-  mt_AI[1] <- ((g_means[12,1]*(g_means[12,1]-g_means[11,1])*(g_means[11,1]-g_means[10,1]))/g_means[14,1])
+  mt_AI[1] <- ((g_means[12,2]*(g_means[12,2]-g_means[11,2])*(g_means[11,2]-g_means[10,2]))/g_means[14,2])
   
   # calculate the hours between the entrainment start and end time
   e_diff <- abs(((etimeE-etimeS)/100)*2)
   
   # calculate the evening anticipation index
   
-  mt_AI[2] <- ((g_means[12+e_diff,1]*(g_means[12+e_diff,1]-g_means[11+e_diff,1])*(g_means[11+e_diff,1]-g_means[10+e_diff,1]))/g_means[14+e_diff,1])
+  mt_AI[2] <- ((g_means[12+e_diff,2]*(g_means[12+e_diff,2]-g_means[11+e_diff,2])*(g_means[11+e_diff,2]-g_means[10+e_diff,2]))/g_means[14+e_diff,2])
   
-  mt_AI[3] <- c_names
-  mt_AI[4] <- genotype
+  mt_AI[3] <- genotype
   
   # return the AI for the genotype
   return(mt_AI)
