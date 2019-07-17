@@ -929,11 +929,13 @@ Feeding_Events_DFMPlots <- function(data, datatype, start_min = 0, end_min = 100
   
   }
   
-  
+  # extract dfm specific names for printed plots
   
   do.call(grid.arrange, c(plots[c(1:6)], top = plot.title))
+  dev.print(png, 'DFM14_W1_W6.png', width=562, height=555)
   
   do.call(grid.arrange, c(plots[c(7:12)], top = plot.title))
+  dev.print(png, 'DFM14_W7_W12.png', width=562, height=555)
   
 }
 
