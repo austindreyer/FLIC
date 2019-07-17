@@ -1,5 +1,5 @@
 #### DFM Initialization Script ####
-### Updated 5/10/2019 ###
+### Updated 7/17/2019 ###
 
 # This script is to be used when setting up a FLIC experiment and when first reading in 
 # a set of raw FLIC data to the computer after an experiment. It contains two key things:
@@ -58,6 +58,12 @@ bin30.dfm3.180201.at  <- BinFeedingData.Licks(dfm3.180201.at,30)
 bin30.dfm4.180201.at  <- BinFeedingData.Licks(dfm4.180201.at,30)
 bin30.dfm5.180201.at  <- BinFeedingData.Licks(dfm5.180201.at,30)
 
+Feeding_Events_DFMPlots(dfm1.180201.at, 'raw')
+Feeding_Events_DFMPlots(dfm2.180201.at, 'raw')
+Feeding_Events_DFMPlots(dfm3.180201.at, 'raw')
+Feeding_Events_DFMPlots(dfm4.180201.at, 'raw')
+Feeding_Events_DFMPlots(dfm5.180201.at, 'raw')
+
 ########## DFMs 6-10 Sable ###########
 dfm6.190327.at <- DFMClass(6,p10) # The number here will refer to the DFM_1 data that is in the working directory you set at the beginning
 dfm7.190327.at <- DFMClass(7,p10)
@@ -76,6 +82,12 @@ bin30.dfm7.190327.at  <- BinFeedingData.Licks(dfm7.190327.at,30)
 bin30.dfm8.190327.at  <- BinFeedingData.Licks(dfm8.190327.at,30)
 bin30.dfm9.190327.at  <- BinFeedingData.Licks(dfm9.190327.at,30)
 bin30.dfm10.190327.at  <- BinFeedingData.Licks(dfm10.190327.at,30)
+
+Feeding_Events_DFMPlots(dfm6.190327.at, 'raw')
+Feeding_Events_DFMPlots(dfm7.190327.at, 'raw')
+Feeding_Events_DFMPlots(dfm8.190327.at, 'raw')
+Feeding_Events_DFMPlots(dfm9.190327.at, 'raw')
+Feeding_Events_DFMPlots(dfm10.190327.at, 'raw')
 
 ########## DFMs 11-15 Sable ###########
 dfm11.190327.at <- DFMClass(11,p10) # The number here will refer to the DFM_1 data that is in the working directory you set at the beginning
@@ -96,6 +108,11 @@ bin30.dfm13.190327.at  <- BinFeedingData.Licks(dfm13.190327.at,30)
 bin30.dfm14.190327.at  <- BinFeedingData.Licks(dfm14.190327.at,30)
 bin30.dfm15.190327.at  <- BinFeedingData.Licks(dfm15.190327.at,30)
 
+Feeding_Events_DFMPlots(dfm11.190327.at, 'raw')
+Feeding_Events_DFMPlots(dfm12.190327.at, 'raw')
+Feeding_Events_DFMPlots(dfm13.190327.at, 'raw')
+Feeding_Events_DFMPlots(dfm14.190327.at, 'raw')
+Feeding_Events_DFMPlots(dfm15.190327.at, 'raw')
 
 dfm1.190207.at <- DFMClass(1,p) # The number here will refer to the DFM_1 data that is in the working directory you set at the beginning
 dfm2.190207.at <- DFMClass(2,p)

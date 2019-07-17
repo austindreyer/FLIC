@@ -1,5 +1,5 @@
 ##### FLIC HomeBrew Functions #####
-### Updated 6/14/2019 ###
+### Updated 7/17/2019 ###
 
 ## contains nearly all of the functions used to handle FLIC data ##
 
@@ -929,12 +929,19 @@ Feeding_Events_DFMPlots <- function(data, datatype, start_min = 0, end_min = 100
   }
   
   # extract dfm specific names for printed plots
+  thing <- deparse(substitute(data))
+  
+  things <- strsplit(thing, '[.]')
+  
+  res <- lapply(things, function(ch) grep("dfm", ch))
+  
+  out <- things[[1]][res[[1]]]
   
   do.call(grid.arrange, c(plots[c(1:6)], top = plot.title))
-  dev.print(png, 'DFM14_W1_W6.png', width=562, height=555)
+  dev.print(png, sprintf('%s_W1_6.png', out), width=874, height=709)
   
   do.call(grid.arrange, c(plots[c(7:12)], top = plot.title))
-  dev.print(png, 'DFM14_W7_W12.png', width=562, height=555)
+  dev.print(png, sprintf('%s_W7_12.png', out), width=874, height=709)
   
 }
 
