@@ -1,5 +1,5 @@
 ##### FLIC HomeBrew Functions #####
-### Updated 7/17/2019 ###
+### Updated 7/18/2019 ###
 
 ## contains nearly all of the functions used to handle FLIC data ##
 
@@ -641,7 +641,7 @@ AI_phase_score <- function(data, genotype, idate, itime, etimeS, etimeE, pday, f
   
   # extract data for just the phase day of interest
   # first calculate the window of data to pull based on pday
-  ps <- 48*(pday-1)
+  ps <- 48*(pday-2)
   
   # then extract the 24 hours of data for desired day
   fly_pday <- fly_data[(1:48)+ps,]
@@ -1149,11 +1149,11 @@ function(id,parameters) {
 }
 
 # function to combine dataframes from multiple experiments by genotype for plotting
-combine_days <- function(data, ...)
+combine_days <- function(ndays, data, ...)
 {
   require(dplyr)
   # pull out the hours column for averaging later
-  hours <- c(rep(seq(0,23.5,.5), 5))
+  hours <- c(rep(seq(0,23.5,.5), ndays))
   
   # combine data from different experiments by genotype
   all_days <- bind_cols(data, ...)

@@ -1,5 +1,5 @@
 #### FLIC_phaseshift ####
-### last updated 6/18/2019 ###
+### last updated 7/18/2019 ###
 
 
 ### NEEDED UPDATES: 
@@ -38,9 +38,8 @@
 #  10. yhigh = max Y axis value
 #  11. by = tick marks 
 #  12. day_col = color of the "daytime", 'white' if actual lights on, 'grey70' if subjective day
-#  13. title = name of the data in quotes 'title here'
 
-# Ex: phaseshift_indfly_plot(bin30.dfm1.data, '2018-02-01', 1755, 0900, 2100, 3, 'norm', 1, 10, 2, 'gray20', 'title')
+# Ex: phaseshift_indfly_plot(bin30.dfm1.data, '2018-02-01', 1755, 0900, 2100, 3, 10, 'norm', 1, 10, 2, 'gray20')
 
 #### Extracting individual phaseshifts from morning and evening environmental transitions ####
 # To look at the actual numerical differences in peak activity use function phaseshift_indfly_time() which
