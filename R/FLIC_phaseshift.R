@@ -1,9 +1,6 @@
 #### FLIC_phaseshift ####
-### last updated 7/18/2019 ###
+### last updated 7/30/2019 ###
 
-
-### NEEDED UPDATES: 
-### 3. write loop function for input of index/anticipation function
 
 # To look for a phaseshift in the timing of behavioral events, can both plot the data to see and 
 # extract the differences in hours of peak activity for each fly as compared to zeitgeber time

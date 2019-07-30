@@ -359,7 +359,7 @@ for (i in 1:(length(mt[1,])-2)) {
   start.date <- as.POSIXlt(sprintf("%s %04d", idate, stime), format = "%Y-%m-%d %H%M")
   start.data <- ((as.numeric(start.date) - as.numeric(init.date)) + (86400*(sday-1)))/3600
   #end.data <- ((as.numeric(start.date) - as.numeric(init.date)) + (86400*(eday)))/3600
-  end.data <- (eday - sday)*48
+  end.data <- (eday - (sday-1))*48
   
   if (hset == "running")
   {
@@ -1217,7 +1217,7 @@ day_meanbehav_plot <- function(data, yhigh = 3, by = 0.5, title)
      #theme(legend.position = "none") +
      
      labs(x = "Hours", 
-          y = "Normalized feeding activity") 
+          y = "Feeding activity") 
  }
 
 # function to randomize fly location in FLIC monitors
