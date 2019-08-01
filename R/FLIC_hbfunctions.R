@@ -650,7 +650,10 @@ AI_phase_score <- function(data, genotype, idate, itime, etimeS, etimeE, pday, f
   fly_pday$day <- rep(seq(0,23.5,0.5))
   
   # extract just well data for calculations
-  mmt <- fly_pday[ , which(names(fly_pday) %in% c(names(fly_pday %>% select(contains("W")))))]
+  mmt <- as.data.frame(fly_pday[ , which(names(fly_pday) %in% c(names(fly_pday %>% select(contains("W")))))])
+  
+  # make column names of data frame match well names
+  colnames(mmt) <- welld
   
   # create empty data frame to store AI phase scores 
   mt_phase <-  setNames(data.frame(matrix(ncol = 4, nrow = 1)), c("M_AI_phase", "E_AI_phase", "well", "genotype"))
@@ -661,8 +664,8 @@ AI_phase_score <- function(data, genotype, idate, itime, etimeS, etimeE, pday, f
   # calculate AI phase scores
   for (i in 1:length(mmt))
        {
-         mt_phase[i,1] <- (sum(mmt[7:11,i]))/(sum(mmt[1:11,i]))
-         mt_phase[i,2] <- (sum(mmt[7:11+e_diff,i]))/(sum(mmt[1:11+e_diff,i]))
+         mt_phase[i,1] <- (sum(mmt[7:12,i]))/(sum(mmt[1:12,i]))
+         mt_phase[i,2] <- (sum(mmt[7:12+e_diff,i]))/(sum(mmt[1:12+e_diff,i]))
   }
   
   mt_phase[3] <- c_name
