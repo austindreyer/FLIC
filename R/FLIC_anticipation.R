@@ -1,5 +1,5 @@
 #### Anticipation behavior ####
-### last updated 7/30/2019 ###
+### last updated 8/5/2019 ###
 
 
 # Stoleru Anticipation Index (Stoleru et al. 2004)
@@ -15,12 +15,15 @@
 ### 1 ###
 # Start by assigning values for shared objects across all analyses, e.g. idate, itime
 # Use the function FLIC_anticipation_objects() to do so, it will prompt user input for all
-# required objects for analysis
+# required objects for analysis (idate, itime, etimeS, etimeE, pday, fday)
 
 ### 2 ### 
 # Need to make objects for well assignments for each dfm by genotype. Use function
 # FLIC_well_objects() to create an object for each dfm that can be passed to any
 # of the other FLIC functions in place of wells, ...
+
+# Ex: FLIC_well_objects('dfm1', 'genotype1', 1,2,3,4)
+# Ex: FLIC_well_objects('dfm2', 'genotype1', 1,2,3,4)
 
 ### 3 ### 
 # Create an object of the raw data for each genotype from each DFM
@@ -34,8 +37,8 @@
 #  6. fday = the last day of data collected
 #  7. well, ... = the well numbers of matching genotype, numbers only
 
-#  Ex: genotype1_dfm1_AI <- AI_index_prep(bin30.dfm1.data, '2018-02-01', 1755, 0900, 7, 8,  5,7,11,12)
-#  Ex: genotype1_dfm2_AI <- AI_index_prep(bin30.dfm2.data, '2018-02-01', 1755, 0900, 7, 8, 5,7,11,12)
+#  Ex: genotype1_dfm1_AI <- AI_index_prep(bin30.dfm1.data, '2018-02-01', 1755, 0900, 7, 8,genotype1_dfm1_wells)
+#  Ex: genotype1_dfm2_AI <- AI_index_prep(bin30.dfm2.data, '2018-02-01', 1755, 0900, 7, 8, genotype1_dfm2_wells)
 
 
 ### 4 ### 
@@ -47,7 +50,7 @@
 #  3. genotype = genotype of fly in quotes
 #  4. data, ... = the objects produced using AI_index_prep() fuction
 
-# Ex: genotype1_AI <- AI_index(0900, 2100, 'genotype1', genotype1_dfm1_AI, genotype1_dfm2_AI)
+# Ex: genotype1_AI <- AI_index(etimeS, etimeE, 'genotype1', genotype1_dfm1_AI, genotype1_dfm2_AI)
 
 
 # Harrisingh Anticipation Phase Score (Harrisingh et al. 2007)
@@ -68,8 +71,8 @@
 #  8. fday = the last day of data collected
 #  9. well, ... = the well numbers of matching genotype, numbers only
 
-# Ex: genotype1_dfm1_AIps <- AI_phase_score(bin30.dfm1.data, 'genotype1', 2018-02-01', 1755, 0900, 2100, 3, 7, 5,7,11,12)
-# Ex: genotype1_dfm2_AIps <- AI_phase_score(bin30.dfm1.data, 'genotype1', 2018-02-01', 1755, 0900, 2100, 3, 7, 5,7,11,12)
+# Ex: genotype1_dfm1_AIps <- AI_phase_score(bin30.dfm1.data, 'genotype1', idate, itime, etimeS, etimeE, pday, fday, genotype1_dfm1_wells)
+# Ex: genotype1_dfm2_AIps <- AI_phase_score(bin30.dfm2.data, 'genotype1', idate, itime, etimeS, etimeE, pday, fday, genotype1_dfm2_wells)
 
 ### 2 ###
 # Then need to combine all calculated AI phase scores for all flies, should be across all genotypes 

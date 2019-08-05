@@ -1,5 +1,5 @@
 #### FLIC_phaseshift ####
-### last updated 7/30/2019 ###
+### last updated 8/5/2019 ###
 
 
 # To look for a phaseshift in the timing of behavioral events, can both plot the data to see and 
@@ -10,13 +10,16 @@
 ### 1 ###
 # Start by assigning values for shared objects across all analyses, e.g. idate, itime
 # Use the function FLIC_anticipation_objects() to do so, it will prompt user input for all
-# required objects for analysis
+# required objects for analysis (idate, itime, etimeS, etimeE, pday, fday)
 
 ### 2 ### 
-# Need to make objects for well assignments for each dfm by genotype. Use function
+# Need to make objects for well assignments for each dfm by genotype, if not already
+# done so for anticipation calculations. Objects need only be entered once. Use function
 # FLIC_well_objects() to create an object for each dfm that can be passed to any
 # of the other FLIC functions in place of wells, ...
 
+# Ex: FLIC_well_objects('dfm1', 'genotype1', 1,2,3,4)
+# Ex: FLIC_well_objects('dfm2', 'genotype1', 1,2,3,4)
 
 #### Plotting of individual phase shifts ####
 # To plot the data, use the function phaseshift_indfly_plot() which will plot the one day of data
@@ -36,7 +39,7 @@
 #  11. by = tick marks 
 #  12. day_col = color of the "daytime", 'white' if actual lights on, 'grey70' if subjective day
 
-# Ex: phaseshift_indfly_plot(bin30.dfm1.data, '2018-02-01', 1755, 0900, 2100, 3, 10, 'norm', 1, 10, 2, 'gray20')
+# Ex: phaseshift_indfly_plot(bin30.dfm1.data, idate, itime, etimeS, etimeE, pday, fday, 'norm', 1, 5, 1, 'gray20')
 
 #### Extracting individual phaseshifts from morning and evening environmental transitions ####
 # To look at the actual numerical differences in peak activity use function phaseshift_indfly_time() which
@@ -54,7 +57,7 @@
 #  that is normalized using standard procedure or not
 #  10. well = well that you want data for (1-12)
 
-# Ex: fly1_PS <- phaseshift_indfly_time(bin30.dfm1.data, 'genotype', 2018-02-01', 1755, 0900, 2100, 3, 7, 'norm', 1)
+# Ex: fly1_PS <- phaseshift_indfly_time(bin30.dfm1.data, 'genotype1', idate, itime, etimeS, etimeE, pday, fday, 'norm', 1)
 
 #### Extracting genotype wide phaseshifts from morning and evening environmental transistions ####
 # To pull out the numerical differences in peak activity use function phaseshift_genotype_time() 
@@ -73,7 +76,7 @@
 #  that is normalized using standard procedure or not
 #  10. well = set of wells that you want data for with commas separating (1-12)
 
-#  Ex: genotype1_dfm1_PS <- phaseshift_genotype_time(bin30.dfm1.data, 'genotype', 2018-02-01', 1755, 0900, 2100, 3, 7, 'norm', 1,5,8,10)
+#  Ex: genotype1_dfm1_PS <- phaseshift_genotype_time(bin30.dfm1.data, 'genotype1', idate, itime, etimeS, etimeE, pday, fday, 'norm', 1,5,8,10)
 
 #### Analysis ####
 

@@ -1,5 +1,5 @@
 ##### FLIC HomeBrew Functions #####
-### Updated 7/26/2019 ###
+### Updated 8/1/2019 ###
 
 ## contains nearly all of the functions used to handle FLIC data ##
 
@@ -542,8 +542,20 @@ phaseshift_genotype_time <- function(data, genotype, idate, itime, etimeS, etime
   # get the wells to be pulled
   wells <- c(well, ...)
   
+  # get name of dfm for reference
+  thing <- deparse(substitute(data))
+  
+  things <- strsplit(thing, '[.]')
+  
+  res <- lapply(things, function(ch) grep("dfm", ch))
+  
+  out <- things[[1]][res[[1]]]
+  
+  welld <- paste0("W", wells)
+  t_name <- paste(out, welld, sep = '_')
+  
   # create empty data frame to store peak data
-  feed_peaks <- setNames(data.frame(matrix(ncol = 3, nrow = length(wells))), c("Mpeak", "Epeak", "genotype"))
+  feed_peaks <- setNames(data.frame(matrix(ncol = 4, nrow = length(wells))), c("Mpeak", "Epeak", "well", "genotype"))
   
   # fill data frame with the extracted peaks by DFM
   for (i in 1:length(wells))
@@ -551,6 +563,9 @@ phaseshift_genotype_time <- function(data, genotype, idate, itime, etimeS, etime
     twell <- wells[i]
     feed_peaks[i,] <- phaseshift_indfly_time(data, genotype, idate, itime, etimeS, etimeE, pday, fday, datatype, twell)
   }
+  # replace well names to include DFM number
+  feed_peaks$well <- t_name
+  
   return(feed_peaks)
 }
 
@@ -943,9 +958,10 @@ Feeding_Events_DFMPlots <- function(data, datatype, start_min = 0, end_min = 100
   
 }
 
-## Function to find local maxima and minima 
+## Function to find local maxima and minima, highest peak for 
+## 5 hours on either side (m=10)
 
-find_peaks <- function (x, m = 3){
+find_peaks <- function (x, m = 10){
   shape <- diff(sign(diff(x, na.pad = FALSE)))
   pks <- sapply(which(shape < 0), FUN = function(i){
     z <- i - m + 1
