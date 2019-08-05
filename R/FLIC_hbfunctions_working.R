@@ -1,9 +1,10 @@
 ##### FLIC HomeBrew Functions #####
-### Updated 6/14/2019 ###
+### Updated 8/5/2019 ###
 
-## contains nearly all of the functions used to handle FLIC data ##
+####### Data Processing Functions #######
 
-# function to reformat all difftime class data to numeric for data binning
+# Function to reformat all difftime class data from DFMClass() to numeric 
+# to allow data binning
 
 DFMData_numeric <- function(data, method)
 {
@@ -11,22 +12,22 @@ DFMData_numeric <- function(data, method)
   
   if(grepl("ft", method))
   {
-  a <- c(3,4,6,7,8)
-  b <- c(9,10)
-  
-  for (i in a)
-  {
-    data[[i]] %>% mutate_if(lubridate::is.difftime, as.numeric) -> data[[i]]
-  }
-  
-
-  for(i in b)
+    a <- c(3,4,6,7,8)
+    b <- c(9,10)
+    
+    for (i in a)
     {
-    for (j in 1:12)
+      data[[i]] %>% mutate_if(lubridate::is.difftime, as.numeric) -> data[[i]]
+    }
+    
+    
+    for(i in b)
+    {
+      for (j in 1:12)
       {
-      if(length(data[[i]][[j]])>1)
+        if(length(data[[i]][[j]])>1)
         {
-      data[[i]][[j]] %>% mutate_if(lubridate::is.difftime, as.numeric) -> data[[i]][[j]]
+          data[[i]][[j]] %>% mutate_if(lubridate::is.difftime, as.numeric) -> data[[i]][[j]]
         }
       }
     }
@@ -57,12 +58,12 @@ DFMData_numeric <- function(data, method)
   }
   
   return(data)
-
+  
 }
 
 
 
-# function to transform binned FLIC data into format for clocklab
+# function to transform binned FLIC data into format recognized by ClockLab (Actimetrics)
 
 txtclabdata <- function(data, dfm, edate, name, sdate, stime, interval)
 {
@@ -335,38 +336,38 @@ subset.data <- function(data, idate, itime, stime, sday, eday, datatype, hset, w
   mt <- set_names(mt, colnames(data))
   mt[,"Interval"] <- data[,"Interval"]   
   mt[,"Min"] <- data[,"Min"]
-               
-for (i in 1:(length(mt[1,])-2)) {
-  avg <- mean(data[,i+2])
-  mt[i+2] <- data[i+2]/avg
-
- }
-
+  
+  for (i in 1:(length(mt[1,])-2)) {
+    avg <- mean(data[,i+2])
+    mt[i+2] <- data[i+2]/avg
+    
+  }
+  
   mt[,"hour"] <- hour
   
   if (datatype == "norm")
-    {
+  {
     wells.data <- mt %>% select(well.des)
-    }
+  }
   else 
   {
     wells.data <- unnorm %>% select(well.des)
   }
   
-    wells.data[,"hour"] <- mt[,"hour"]
-    
+  wells.data[,"hour"] <- mt[,"hour"]
+  
   init.date <- as.POSIXlt(sprintf("%s %04d", idate, itime), format = "%Y-%m-%d %H%M")
   start.date <- as.POSIXlt(sprintf("%s %04d", idate, stime), format = "%Y-%m-%d %H%M")
   start.data <- ((as.numeric(start.date) - as.numeric(init.date)) + (86400*(sday-1)))/3600
   #end.data <- ((as.numeric(start.date) - as.numeric(init.date)) + (86400*(eday)))/3600
-  end.data <- (eday - sday)*48
+  end.data <- (eday - (sday-1))*48
   
   if (hset == "running")
   {
-  #mrmt.sub <- subset(wells.data, hour > start.data & hour < end.data)
-  mrmt.fsub <- subset(wells.data, hour > start.data)
-  mrmt.sub <- mrmt.fsub[1:end.data,]
-  mrmt.sub$hours <- mrmt.sub$hour-head(mrmt.sub$hour, n=1)
+    #mrmt.sub <- subset(wells.data, hour > start.data & hour < end.data)
+    mrmt.fsub <- subset(wells.data, hour > start.data)
+    mrmt.sub <- mrmt.fsub[1:end.data,]
+    mrmt.sub$hours <- mrmt.sub$hour-head(mrmt.sub$hour, n=1)
   }
   else
   {
@@ -378,20 +379,32 @@ for (i in 1:(length(mt[1,])-2)) {
   
   mrmt.sub <- mrmt.sub[, !(names(mrmt.sub) %in% "hour")]
   return(mrmt.sub)
- }
+}
 
 
 ## function to plot any phase shifts, by well (=genotype)
 
-phaseshift_indfly_plot <- function(data, idate, itime, etimeS, etimeE, pday, eday, datatype, well, yhigh, by, day_col, title)
+phaseshift_indfly_plot <- function(data, idate, itime, etimeS, etimeE, pday, fday, datatype, well, yhigh, by, day_col)
 {
   # call necessary libraries
   library(stats)
   library(signal)
   library(ggplot2)
   
+  # create title for plot
+  thing <- deparse(substitute(data))
+  
+  things <- strsplit(thing, '[.]')
+  
+  res <- lapply(things, function(ch) grep("dfm", ch))
+  
+  out <- things[[1]][res[[1]]]
+  
+  welld <- paste0("W", well)
+  t_name <- paste(out, welld, sep = '_')
+  
   # extact all data starting 6 hours prior to CT0 the first day after FLIC loaded 
-  fly_data <- subset.data(data, idate, itime, etimeS, sday = 1.75, eday, datatype, hset = 'running', well)
+  fly_data <- subset.data(data, idate, itime, etimeS, sday = 1.75, fday, datatype, hset = 'running', well)
   
   # create Butterworth filter object
   bf <- butter(2, 0.1, type = 'low', plane = 'z')
@@ -428,7 +441,7 @@ phaseshift_indfly_plot <- function(data, idate, itime, etimeS, etimeE, pday, eda
     geom_line(data = fly_pday, aes(hours, bf), 
               color = 'red') +
     scale_fill_manual(values = c("n" = "black", "d" = day_col)) +
-    ggtitle(sprintf("%s",title)) +
+    ggtitle(sprintf("%s",t_name)) +
     scale_x_continuous(limits = c(-.5,24.5), 
                        breaks = seq(0,24,6), 
                        expand = c(0, 0)) +
@@ -450,14 +463,26 @@ phaseshift_indfly_plot <- function(data, idate, itime, etimeS, etimeE, pday, eda
 
 ## function to pull out the difference in hours of any phase shifts, by well (=genotype)
 
-phaseshift_indfly_time <- function(data, genotype, idate, itime, etimeS, etimeE, pday, eday, datatype, well)
+phaseshift_indfly_time <- function(data, genotype, idate, itime, etimeS, etimeE, pday, fday, datatype, well)
 {
   # call necessary libraries
   library(stats)
   library(signal)
- 
+  
+  thing <- deparse(substitute(data))
+  
+  things <- strsplit(thing, '[.]')
+  
+  res <- lapply(things, function(ch) grep("dfm", ch))
+  
+  out <- things[[1]][res[[1]]]
+  
+  welld <- paste0("W", well)
+  t_name <- paste(out, welld, sep = '_')
+  
+  
   # extact all data starting 6 hours prior to CT0 the first day after FLIC loaded 
-  fly_data <- subset.data(data, idate, itime, etimeS, sday = 1.75, eday, datatype, hset = 'running', well)
+  fly_data <- subset.data(data, idate, itime, etimeS, sday = 1.75, fday, datatype, hset = 'running', well)
   
   # create Butterworth filter object
   bf <- butter(2, 0.1, type = 'low', plane = 'z')
@@ -493,7 +518,7 @@ phaseshift_indfly_time <- function(data, genotype, idate, itime, etimeS, etimeE,
   pday_peaks <- subset(mt_peaks, mt_peaks > min(fly_pday$hours) & mt_peaks < max(fly_pday$hours))
   
   # make empty columns for correct peak data to be added
-  mt_peaks <-  setNames(data.frame(matrix(ncol = 3, nrow = 1)), c("Mpeak", "Epeak", "genotype"))
+  mt_peaks <-  setNames(data.frame(matrix(ncol = 4, nrow = 1)), c("Mpeak", "Epeak", "well", "genotype"))
   
   # and correct them for relative time on the day of interest
   if (length(pday_peaks) > 1)
@@ -505,35 +530,66 @@ phaseshift_indfly_time <- function(data, genotype, idate, itime, etimeS, etimeE,
     mt_peaks[2] <- pday_peaks[1]-fly_pday[37,2]
   }
   
-  mt_peaks[3] <- genotype
+  mt_peaks[3] <- t_name
+  mt_peaks[4] <- genotype
   
-# return the phase shift for the fly
+  # return the phase shift for the fly
   return(mt_peaks)
 }
 
 # function to compile phase shifts in hours for a genotype of a FLIC
-phaseshift_genotype_time <- function(data, genotype, idate, itime, etimeS, etimeE, pday, eday, datatype, well, ...)
+phaseshift_genotype_time <- function(data, genotype, idate, itime, etimeS, etimeE, pday, fday, datatype, well, ...)
 {
   # get the wells to be pulled
   wells <- c(well, ...)
   
+  # get name of dfm for reference
+  thing <- deparse(substitute(data))
+  
+  things <- strsplit(thing, '[.]')
+  
+  res <- lapply(things, function(ch) grep("dfm", ch))
+  
+  out <- things[[1]][res[[1]]]
+  
+  welld <- paste0("W", wells)
+  t_name <- paste(out, welld, sep = '_')
+  
   # create empty data frame to store peak data
-  feed_peaks <- setNames(data.frame(matrix(ncol = 3, nrow = length(wells))), c("Mpeak", "Epeak", "genotype"))
+  feed_peaks <- setNames(data.frame(matrix(ncol = 4, nrow = length(wells))), c("Mpeak", "Epeak", "well", "genotype"))
   
   # fill data frame with the extracted peaks by DFM
   for (i in 1:length(wells))
   {
     twell <- wells[i]
-    feed_peaks[i,] <- phaseshift_indfly_time(data, genotype, idate, itime, etimeS, etimeE, pday, eday, datatype, twell)
+    feed_peaks[i,] <- phaseshift_indfly_time(data, genotype, idate, itime, etimeS, etimeE, pday, fday, datatype, twell)
   }
+  # replace well names to include DFM number
+  feed_peaks$well <- t_name
+  
   return(feed_peaks)
 }
 
 # function to extract data needed for calculation of anticipation index
-AI_index_prep <- function(data, idate, itime, etimeS, pday, eday, well, ...)
+AI_index_prep <- function(data, idate, itime, etimeS, pday, fday, well, ...)
 {
   # extract all of the data for experiment starting 6 hours before entrainment time for calculations
-  fly_data <- subset.data(data, idate, itime, etimeS, sday = 1.75, eday, "nonnorm", hset = 'running', well, ...)
+  fly_data <- subset.data(data, idate, itime, etimeS, sday = 1.75, fday, "nonnorm", hset = 'running', well, ...)
+  
+  # create well names for reference
+  wells <- c(well, ...)
+  
+  thing <- deparse(substitute(data))
+  
+  things <- strsplit(thing, '[.]')
+  
+  res <- lapply(things, function(ch) grep("dfm", ch))
+  
+  out <- things[[1]][res[[1]]]
+  
+  welld <- paste0("W", wells)
+  c_name <- paste(out, welld, sep = '_')
+  c_names <- c(c_name, "hours", "day")
   
   # extract data for just the phase day of interest
   ## first calculate the window of data to pull based on pday
@@ -545,13 +601,14 @@ AI_index_prep <- function(data, idate, itime, etimeS, pday, eday, well, ...)
   # add column of just 0-24 hours for reference
   fly_pday$day <- rep(seq(0,23.5,0.5))
   
+  colnames(fly_pday) <- c_names
   return(fly_pday)
 }
 
 # function to calculate the anticipation index activity prior to environmental shift (as described in Stoleru et al. 2004)
 AI_index <- function(etimeS, etimeE, genotype, data, ...)
 {
-
+  
   # calculate genotype averages
   g_means <- genotype.means(data, ...)
   
@@ -562,14 +619,14 @@ AI_index <- function(etimeS, etimeE, genotype, data, ...)
   mt_AI <-  setNames(data.frame(matrix(ncol = 3, nrow = 1)), c("M_AI", "E_AI", "genotype"))
   
   # calculate the morning anticipation index
-  mt_AI[1] <- ((g_means[12,1]*(g_means[12,1]-g_means[11,1])*(g_means[11,1]-g_means[10,1]))/g_means[14,1])
+  mt_AI[1] <- ((g_means[12,2]*(g_means[12,2]-g_means[11,2])*(g_means[11,2]-g_means[10,2]))/g_means[14,2])
   
   # calculate the hours between the entrainment start and end time
   e_diff <- abs(((etimeE-etimeS)/100)*2)
   
   # calculate the evening anticipation index
   
-  mt_AI[2] <- ((g_means[12+e_diff,1]*(g_means[12+e_diff,1]-g_means[11+e_diff,1])*(g_means[11+e_diff,1]-g_means[10+e_diff,1]))/g_means[14+e_diff,1])
+  mt_AI[2] <- ((g_means[12+e_diff,2]*(g_means[12+e_diff,2]-g_means[11+e_diff,2])*(g_means[11+e_diff,2]-g_means[10+e_diff,2]))/g_means[14+e_diff,2])
   
   mt_AI[3] <- genotype
   
@@ -578,14 +635,29 @@ AI_index <- function(etimeS, etimeE, genotype, data, ...)
 }
 
 # Function to calculate anticipation phase shift (as described in Harrisingh et al. 2007)
-AI_phase_score <- function(data, genotype, idate, itime, etimeS, etimeE, pday, eday, well, ...)
+AI_phase_score <- function(data, genotype, idate, itime, etimeS, etimeE, pday, fday, well, ...)
 {
+  
+  # create well names for reference
+  wells <- c(well, ...)
+  
+  thing <- deparse(substitute(data))
+  
+  things <- strsplit(thing, '[.]')
+  
+  res <- lapply(things, function(ch) grep("dfm", ch))
+  
+  out <- things[[1]][res[[1]]]
+  
+  welld <- paste0("W", wells)
+  c_name <- paste(out, welld, sep = '_')
+  
   # extract all of the data for experiment starting 6 hours before entrainment time for calculations
-  fly_data <- subset.data(data, idate, itime, etimeS, sday = 0.75, eday, "nonnorm", hset = 'running', well, ...)
+  fly_data <- subset.data(data, idate, itime, etimeS, sday = 1.75, fday, "nonnorm", hset = 'running', well, ...)
   
   # extract data for just the phase day of interest
   # first calculate the window of data to pull based on pday
-  ps <- 48*(pday-1)
+  ps <- 48*(pday-2)
   
   # then extract the 24 hours of data for desired day
   fly_pday <- fly_data[(1:48)+ps,]
@@ -594,22 +666,26 @@ AI_phase_score <- function(data, genotype, idate, itime, etimeS, etimeE, pday, e
   fly_pday$day <- rep(seq(0,23.5,0.5))
   
   # extract just well data for calculations
-  mmt <- fly_pday[ , which(names(fly_pday) %in% c(names(fly_pday %>% select(contains("W")))))]
+  mmt <- as.data.frame(fly_pday[ , which(names(fly_pday) %in% c(names(fly_pday %>% select(contains("W")))))])
+  
+  # make column names of data frame match well names
+  colnames(mmt) <- welld
   
   # create empty data frame to store AI phase scores 
-  mt_phase <-  setNames(data.frame(matrix(ncol = 4, nrow = 1)), c("well", "M_AI_phase", "E_AI_phase", "genotype"))
+  mt_phase <-  setNames(data.frame(matrix(ncol = 4, nrow = 1)), c("M_AI_phase", "E_AI_phase", "well", "genotype"))
   
   # calculate the hours between the entrainment start and end time
   e_diff <- abs(((etimeE-etimeS)/100)*2)
   
   # calculate AI phase scores
   for (i in 1:length(mmt))
-       {
-         mt_phase[i,1] <- (sum(mmt[7:11,i]))/(sum(mmt[1:11,i]))
-         mt_phase[i,2] <- (sum(mmt[7:11+e_diff,i]))/(sum(mmt[1:11+e_diff,i]))
-        }
+  {
+    mt_phase[i,1] <- (sum(mmt[7:12,i]))/(sum(mmt[1:12,i]))
+    mt_phase[i,2] <- (sum(mmt[7:12+e_diff,i]))/(sum(mmt[1:12+e_diff,i]))
+  }
   
-  mt_phase[3] <- genotype
+  mt_phase[3] <- c_name
+  mt_phase[4] <- genotype
   
   return(mt_phase)
 }
@@ -633,7 +709,7 @@ genotype.means <- function(data, ...)
   mrmt$mean <- rowMeans(mmt)
   
   for (i in 1:length(mmt[,1]))
-    {
+  {
     mrmt$se[i] <- sem(mmt[i,])
   }
   return(mrmt)
@@ -643,63 +719,63 @@ genotype.means <- function(data, ...)
 ### modification of genotype.plot() function to make plots special for pub
 
 genotype.plot.fig <- function (data, title, genotypecol, size=1.5, shape=21, low=0, high=4, by=1, ribbon=T) 
-  {
+{
   
   color <- color.select(genotypecol)
   
   if (ribbon == "TRUE")
-    {
-  ggplot(data, aes(x=hour,y=mean)) + 
-    geom_line(color=color) + 
-    ggtitle(sprintf("%s",title)) +
-    labs(x = "Time (Hours)", 
-         y = "Normalized Feeding Activity/fly") +
-    scale_x_continuous(limits = c(head(data$hour, n=1)-2, 
-                                  tail(data$hour,n=1)+2),
-                      breaks = seq(from = head(data$hour,n=1), 
-                                  to = tail(data$hour,n=1)+24, by=24),
-                      labels = seq(from = head(data$hour,n=1), 
-                                     to = tail(data$hour,n=1)+24, by=24)) + 
-    scale_y_continuous(limits = c(low,high),
-                       breaks = seq(low, high, by=by), 
-                       labels = seq(low, high, by=by)) +
-    geom_ribbon(data=data,aes(ymin=mean-se,ymax=mean+se), fill = color, colour=NA, alpha=0.4)+
-    #scale_fill_manual(name = "genotype", values = c('red', 'blue', 'green')) +
-    geom_point(size=size, shape=shape, fill=color) + 
-    theme_classic() +
-    theme(axis.line.x = element_line(color="black", size = .5),
-          axis.line.y = element_line(color="black", size = .5),
-          axis.title = element_text(size=18),
-          plot.title = element_text(hjust = 0.5),
-          axis.text.x = element_text(size=12),
-          axis.text.y = element_text(size=12),
-          legend.position = "none")
+  {
+    ggplot(data, aes(x=hour,y=mean)) + 
+      geom_line(color=color) + 
+      ggtitle(sprintf("%s",title)) +
+      labs(x = "Time (Hours)", 
+           y = "Normalized Feeding Activity/fly") +
+      scale_x_continuous(limits = c(head(data$hour, n=1)-2, 
+                                    tail(data$hour,n=1)+2),
+                         breaks = seq(from = head(data$hour,n=1), 
+                                      to = tail(data$hour,n=1)+24, by=24),
+                         labels = seq(from = head(data$hour,n=1), 
+                                      to = tail(data$hour,n=1)+24, by=24)) + 
+      scale_y_continuous(limits = c(low,high),
+                         breaks = seq(low, high, by=by), 
+                         labels = seq(low, high, by=by)) +
+      geom_ribbon(data=data,aes(ymin=mean-se,ymax=mean+se), fill = color, colour=NA, alpha=0.4)+
+      #scale_fill_manual(name = "genotype", values = c('red', 'blue', 'green')) +
+      geom_point(size=size, shape=shape, fill=color) + 
+      theme_classic() +
+      theme(axis.line.x = element_line(color="black", size = .5),
+            axis.line.y = element_line(color="black", size = .5),
+            axis.title = element_text(size=18),
+            plot.title = element_text(hjust = 0.5),
+            axis.text.x = element_text(size=12),
+            axis.text.y = element_text(size=12),
+            legend.position = "none")
   }
-   
+  
   else {
-  ggplot(data, aes(x=hour,y=mean, color = color)) + 
-    geom_line() + 
-    ggtitle(sprintf("%s",title)) +
-    labs(x = "Time (Hours)", 
-         y = "Normalized Feeding Activity/fly") +
-    scale_x_continuous(limits = c(head(data$hour, n=1)-2, 
-                                  tail(data$hour,n=1)+2),
-                       breaks = seq(from = head(data$hour,n=1), 
-                                    to = tail(data$hour,n=1)+24, by=24),
-                       labels = seq(from = head(data$hour,n=1), 
-                                    to = tail(data$hour,n=1)+24, by=24)) + 
-    scale_y_continuous(limits = c(low,high),
-                       breaks = seq(low, high, by=by), 
-                       labels = seq(low, high, by=by)) +
-    geom_errorbar(data=data,aes(ymin=mean-se,ymax=mean+se), width=3)+
-    geom_point(size=size, shape=shape, fill=color) + 
-    theme_classic() +
-    theme(axis.line.x = element_line(color="black", size = .5),
-          axis.line.y = element_line(color="black", size = .5),
-          axis.title = element_text(size=18),
-          plot.title = element_text(hjust = 0.5),
-          axis.text.x = element_text(size=12),
-          axis.text.y = element_text(size=12))
+    ggplot(data, aes(x=hour,y=mean, color = color)) + 
+      geom_line() + 
+      ggtitle(sprintf("%s",title)) +
+      labs(x = "Time (Hours)", 
+           y = "Normalized Feeding Activity/fly") +
+      scale_x_continuous(limits = c(head(data$hour, n=1)-2, 
+                                    tail(data$hour,n=1)+2),
+                         breaks = seq(from = head(data$hour,n=1), 
+                                      to = tail(data$hour,n=1)+24, by=24),
+                         labels = seq(from = head(data$hour,n=1), 
+                                      to = tail(data$hour,n=1)+24, by=24)) + 
+      scale_y_continuous(limits = c(low,high),
+                         breaks = seq(low, high, by=by), 
+                         labels = seq(low, high, by=by)) +
+      geom_errorbar(data=data,aes(ymin=mean-se,ymax=mean+se), width=3)+
+      geom_point(size=size, shape=shape, fill=color) + 
+      theme_classic() +
+      theme(axis.line.x = element_line(color="black", size = .5),
+            axis.line.y = element_line(color="black", size = .5),
+            axis.title = element_text(size=18),
+            plot.title = element_text(hjust = 0.5),
+            axis.text.x = element_text(size=12),
+            axis.text.y = element_text(size=12))
   }
 }
 
@@ -752,49 +828,49 @@ Feeding_Events_Plot_Well <- function(data, datatype, well, start_min = 0, end_mi
   
   if (length(feed.data)>1)
   {
-  feed.sub <- subset(feed.data, Minutes > start_min & Minutes < end_min)
-  
-  #create upper and lower bounds of line segments for feeding event identification
-  y.bottom <- rep((mean(plot.sub[,well.plot])-25), length(feed.sub$Minutes))
-  y.top <- rep((mean(plot.sub[,well.plot])-5), length(feed.sub$Minutes))
-  
-  #create line segments to indicate when feeding events occurred
-  segment.data <- data.frame(xint = as.numeric(feed.sub$Minutes), 
-                             y.low = y.bottom,
-                             y.up = y.top)
-  
-  #create title for plot
-  plot.title <- deparse(substitute(data))
-  
-  
- 
-  #plot the raw data and the line segments for feeding events
-    ggplot(plot.sub, aes(x = Minutes, y = plot.sub[,well.plot])) +
-              labs(y = well.plot, title = plot.title) +
-              geom_line(linetype = "dashed", alpha=0.4) +
-              geom_segment(data = segment.data,
-                aes(x = xint, xend = xint,
-                y = y.low, yend = y.up),
-                colour = "red")
-   }
-  else
-    {
-  #plot just the raw data if no feeding events took place (i.e. dead fly)
+    feed.sub <- subset(feed.data, Minutes > start_min & Minutes < end_min)
+    
+    #create upper and lower bounds of line segments for feeding event identification
+    y.bottom <- rep((mean(plot.sub[,well.plot])-25), length(feed.sub$Minutes))
+    y.top <- rep((mean(plot.sub[,well.plot])-5), length(feed.sub$Minutes))
+    
+    #create line segments to indicate when feeding events occurred
+    segment.data <- data.frame(xint = as.numeric(feed.sub$Minutes), 
+                               y.low = y.bottom,
+                               y.up = y.top)
+    
+    #create title for plot
     plot.title <- deparse(substitute(data))
-      
+    
+    
+    
+    #plot the raw data and the line segments for feeding events
     ggplot(plot.sub, aes(x = Minutes, y = plot.sub[,well.plot])) +
-        labs(y = well.plot, title = plot.title) +
-        geom_line(linetype = "dashed", alpha=0.4)
-    }
+      labs(y = well.plot, title = plot.title) +
+      geom_line(linetype = "dashed", alpha=0.4) +
+      geom_segment(data = segment.data,
+                   aes(x = xint, xend = xint,
+                       y = y.low, yend = y.up),
+                   colour = "red")
+  }
+  else
+  {
+    #plot just the raw data if no feeding events took place (i.e. dead fly)
+    plot.title <- deparse(substitute(data))
+    
+    ggplot(plot.sub, aes(x = Minutes, y = plot.sub[,well.plot])) +
+      labs(y = well.plot, title = plot.title) +
+      geom_line(linetype = "dashed", alpha=0.4)
+  }
   
 }
 
 # Function to create paneled plots for all 12 wells comparing
 # raw data and feeding events
 
-Feeding_Events_DFMPlots <- function(data, start_min = 0, end_min = 100000)
+Feeding_Events_DFMPlots <- function(data, datatype, start_min = 0, end_min = 100000)
 {
-  
+  require(tidyverse)
   require(gridExtra)
   
   #create empty list to populate with actual plots
@@ -816,67 +892,77 @@ Feeding_Events_DFMPlots <- function(data, start_min = 0, end_min = 100000)
   #create title for plot
   plot.title <- deparse(substitute(data))
   
+  
   for (i in 1:12)
   {
-  
-  #creates full well designation by pasting a "W" before the number
-  well.plot <- paste0("W", i)  
-  
-  #creates data frame of all feeding events for selected well
-  feed.data <- Feeding.Durations.Well(data, i)
-  
-  #truncate the full data sets to start and end time
-  plot.sub <- subset(plot.data, Minutes > start_min & Minutes < end_min)
-  
-  #extract just the data that needs to be plotted for each well
-  plot.single.well <- plot.sub %>% select(Minutes, Signal = well.plot)
-  plot.sub.well[[i]] <- plot.single.well
-  
-  
-  if (length(feed.data)>1)
-  {
-    feed.sub <- subset(feed.data, Minutes > start_min & Minutes < end_min)
     
-    #create upper and lower bounds of line segments for feeding event identification
-    y.bottom <- rep((mean(plot.sub[,well.plot])-25), length(feed.sub$Minutes))
-    y.top <- rep((mean(plot.sub[,well.plot])-5), length(feed.sub$Minutes))
+    #creates full well designation by pasting a "W" before the number
+    well.plot <- paste0("W", i)  
     
-    #create line segments to indicate when feeding events occurred
-    segment.data <- data.frame(xint = as.numeric(feed.sub$Minutes), 
-                               y.low = y.bottom,
-                               y.up = y.top)
+    #creates data frame of all feeding events for selected well
+    feed.data <- Feeding.Durations.Well(data, i)
     
-    #plot the raw data and the line segments for feeding events
-    plots[[i]] <- ggplot(plot.sub.well[[i]], 
-                         aes(x = Minutes, y = Signal)) +
-      labs(y = well.plot) +
-      geom_line(linetype = "dashed", 
-                alpha=0.4) +
-      geom_segment(data = segment.data,
-                   aes(x = xint, xend = xint,
-                       y = y.low, yend = y.up),
-                   colour = "red")
+    #truncate the full data sets to start and end time
+    plot.sub <- subset(plot.data, Minutes > start_min & Minutes < end_min)
+    
+    #extract just the data that needs to be plotted for each well
+    plot.single.well <- plot.sub %>% select(Minutes, Signal = well.plot)
+    plot.sub.well[[i]] <- plot.single.well
+    
+    
+    if (length(feed.data)>1)
+    {
+      feed.sub <- subset(feed.data, Minutes > start_min & Minutes < end_min)
+      
+      #create upper and lower bounds of line segments for feeding event identification
+      y.bottom <- rep((mean(plot.sub[,well.plot])-25), length(feed.sub$Minutes))
+      y.top <- rep((mean(plot.sub[,well.plot])-5), length(feed.sub$Minutes))
+      
+      #create line segments to indicate when feeding events occurred
+      segment.data <- data.frame(xint = as.numeric(feed.sub$Minutes), 
+                                 y.low = y.bottom,
+                                 y.up = y.top)
+      
+      #plot the raw data and the line segments for feeding events
+      plots[[i]] <- ggplot(plot.sub.well[[i]], 
+                           aes(x = Minutes, y = Signal)) +
+        labs(y = well.plot) +
+        geom_line(linetype = "dashed", 
+                  alpha=0.4) +
+        geom_segment(data = segment.data,
+                     aes(x = xint, xend = xint,
+                         y = y.low, yend = y.up),
+                     colour = "red")
+    }
+    else
+    {
+      #plot just the raw data if no feeding events took place (i.e. dead fly)
+      
+      plots[[i]] <- ggplot(plot.sub.well[[i]], #ggplot does lazy evaluation, index reference only in reference to data =...
+                           aes(x = Minutes, y = Signal)) +
+        labs(y = well.plot) +
+        geom_line(linetype = "dashed", 
+                  alpha=0.4)
+    }
+    
   }
-  else
-  {
-    #plot just the raw data if no feeding events took place (i.e. dead fly)
-    
-    plots[[i]] <- ggplot(plot.sub.well[[i]], #ggplot does lazy evaluation, index reference only in reference to data =...
-                         aes(x = Minutes, y = Signal)) +
-      labs(y = well.plot) +
-      geom_line(linetype = "dashed", 
-                alpha=0.4)
-  }
   
-  }
+  # extract dfm specific names for printed plots
   
-  do.call(grid.arrange, c(plots, top = plot.title))
+  out <- data$ID
+  
+  do.call(grid.arrange, c(plots[c(1:6)], top = plot.title))
+  dev.print(png, sprintf('dfm%s_W1_6.png', out), width=874, height=709)
+  
+  do.call(grid.arrange, c(plots[c(7:12)], top = plot.title))
+  dev.print(png, sprintf('dfm%s_W7_12.png', out), width=874, height=709)
   
 }
 
-## Function to find local maxima and minima 
+## Function to find local maxima and minima, highest peak for 
+## 5 hours on either side (m=10)
 
-find_peaks <- function (x, m = 3){
+find_peaks <- function (x, m = 10){
   shape <- diff(sign(diff(x, na.pad = FALSE)))
   pks <- sapply(which(shape < 0), FUN = function(i){
     z <- i - m + 1
@@ -928,7 +1014,7 @@ feed.total <- function(data, dfm, idate, itime, stime, sday, eday, w1, w2, w3, w
   {
     wraw.data <- Feeding.Durations.Well(data, i)
     if(length(wraw.data) < 2) next
-   
+    
     wraw.data$Time <- init.date + (wraw.data$Minutes*60)
     wsub.data <- subset(wraw.data, Time > start.data & Time < end.data)
     wfeed.data <- sum(wsub.data$Duration)
@@ -1078,11 +1164,11 @@ function(id,parameters) {
 }
 
 # function to combine dataframes from multiple experiments by genotype for plotting
-combine_days <- function(data, ...)
+combine_days <- function(ndays, data, ...)
 {
   require(dplyr)
   # pull out the hours column for averaging later
-  hours <- c(rep(seq(0,23.5,.5), 5))
+  hours <- c(rep(seq(0,23.5,.5), ndays))
   
   # combine data from different experiments by genotype
   all_days <- bind_cols(data, ...)
@@ -1098,61 +1184,61 @@ combine_days <- function(data, ...)
 
 # function to create day/night plots of 24 hr averaged activity
 day_meanbehav_plot <- function(data, yhigh = 3, by = 0.5, title)
- {
-   
-   require(ggplot2)
-   
-   # average behavioral tally of each 30 minute bin for each fly
-   mean_data <- aggregate(. ~hours, data = data, mean)
-   
-   # the mean activity across all flies
-   activity_means <- data.frame(hours = mean_data[,1], means = rowMeans(mean_data[,-1]))
-   
-   # add in column for night vs. day bars (to be used as grouping variable when plotting)
-   activity_means$n.d <- c(rep("n", 12), rep("d", 24), rep("n", 12))
-   
-   # standard error function
-   se <- function(x) sqrt(var(x)/length(x))
-   
-   # pull out just the data without the "hours" to calculate standard errors
-   activity_means_fly <- mean_data[,-1]
-   
-   # add standard errors for each binned data group
-   activity_means$se <- apply(activity_means_fly, 1, se)
-   
-   # create the base plotting object for ggplot
-   p <- ggplot(activity_means, aes(hours, means, fill=n.d))
-   
-   # plot the thing, complete with error bars, no background, and axis labels
-   p + 
-     geom_bar(stat = "identity", 
-              colour = "black", 
-              position = position_nudge(x = 0.25)) +
-     scale_fill_manual(values = c("n" = "black", "d" = "white")) +
-     ggtitle(sprintf("%s",title)) +
-     scale_x_continuous(limits = c(-.5,24.5), 
-                        breaks = seq(0,24,6), 
-                        expand = c(0, 0)) +
-     scale_y_continuous(limits = c(0,yhigh),
-                        breaks = seq(0, yhigh, by=by), 
-                        labels = seq(0, yhigh, by=by),
-                        expand = c(0,0)) +
-     geom_errorbar(aes(ymin = means-se, ymax=means+se), 
-                   width = 0.2,
-                   position = position_nudge(x = 0.25)) + 
-     theme_classic(base_size = 15) +
-     theme(axis.line.x = element_line(color="black", size = .5),
-           axis.line.y = element_line(color="black", size = .5),
-           axis.title = element_text(size=18),
-           plot.title = element_text(hjust = 0.5, size = 10),
-           axis.text.x = element_text(size=12),
-           axis.text.y = element_text(size=12),
-           legend.position = "none") +
-     #theme(legend.position = "none") +
-     
-     labs(x = "Hours", 
-          y = "Normalized feeding activity") 
- }
+{
+  
+  require(ggplot2)
+  
+  # average behavioral tally of each 30 minute bin for each fly
+  mean_data <- aggregate(. ~hours, data = data, mean)
+  
+  # the mean activity across all flies
+  activity_means <- data.frame(hours = mean_data[,1], means = rowMeans(mean_data[,-1]))
+  
+  # add in column for night vs. day bars (to be used as grouping variable when plotting)
+  activity_means$n.d <- c(rep("n", 12), rep("d", 24), rep("n", 12))
+  
+  # standard error function
+  se <- function(x) sqrt(var(x)/length(x))
+  
+  # pull out just the data without the "hours" to calculate standard errors
+  activity_means_fly <- mean_data[,-1]
+  
+  # add standard errors for each binned data group
+  activity_means$se <- apply(activity_means_fly, 1, se)
+  
+  # create the base plotting object for ggplot
+  p <- ggplot(activity_means, aes(hours, means, fill=n.d))
+  
+  # plot the thing, complete with error bars, no background, and axis labels
+  p + 
+    geom_bar(stat = "identity", 
+             colour = "black", 
+             position = position_nudge(x = 0.25)) +
+    scale_fill_manual(values = c("n" = "black", "d" = "white")) +
+    ggtitle(sprintf("%s",title)) +
+    scale_x_continuous(limits = c(-.5,24.5), 
+                       breaks = seq(0,24,6), 
+                       expand = c(0, 0)) +
+    scale_y_continuous(limits = c(0,yhigh),
+                       breaks = seq(0, yhigh, by=by), 
+                       labels = seq(0, yhigh, by=by),
+                       expand = c(0,0)) +
+    geom_errorbar(aes(ymin = means-se, ymax=means+se), 
+                  width = 0.2,
+                  position = position_nudge(x = 0.25)) + 
+    theme_classic(base_size = 15) +
+    theme(axis.line.x = element_line(color="black", size = .5),
+          axis.line.y = element_line(color="black", size = .5),
+          axis.title = element_text(size=18),
+          plot.title = element_text(hjust = 0.5, size = 10),
+          axis.text.x = element_text(size=12),
+          axis.text.y = element_text(size=12),
+          legend.position = "none") +
+    #theme(legend.position = "none") +
+    
+    labs(x = "Hours", 
+         y = "Feeding activity") 
+}
 
 # function to randomize fly location in FLIC monitors
 
@@ -1163,18 +1249,140 @@ FLIC_random <- function(num_fly = 12, num_gen = 3)
   fly_dist <- rep(1:num_gen, each = groups) 
   
   if(num_fly > 6) 
-    {
+  {
     matrix(sample(c(fly_dist), replace = FALSE), nrow=2, ncol=6)
   }
   else 
-    {
-      matrix(sample(c(fly_dist), replace = FALSE), nrow=1, ncol=6)
+  {
+    matrix(sample(c(fly_dist), replace = FALSE), nrow=1, ncol=6)
   }
 }
 
 
+FLIC_well_objects <- function(dfm, genotype, wells, ...) 
+{
+  
+  wells
+  wells <- c(wells, ...)
+  #well.des <- paste0("W",wells)
+  
+  for (i in 1:(length(wells))) 
+  {
+    name <- paste(genotype, dfm, 'wells', sep = '_')
+    assign(name, wells, envir = .GlobalEnv)
+  }
+}
+
+# function to assign object values for FLIC analysis functions
+
+FLIC_objects <- function()
+{
+  # warning about overwriting old objects
+  invisible(readline(prompt=" WARNING: this function will write values for R objects to the global environment,
+                     overwriting anything with the same name.
+                     Press [enter] to continue
+                     Press [esc] to exit"))
+  
+  # initial date of experiment
+  initial_date <- readline('Enter value of idate in yyyy-mm-dd format: ')
+  assign('idate', initial_date, envir = .GlobalEnv)
+  
+  # start time of total experiment 
+  initial_time <- readline('Enter value of itime (start time of experiment) in military time: ')
+  initial_time <- as.numeric(initial_time)
+  assign('itime', initial_time, envir = .GlobalEnv)
+  
+  # entrainment start time
+  entrain_time <- readline('Enter value of stime (beginning of entrainment schedule) in military time: ')
+  entrain_time <- as.numeric(entrain_time)
+  assign('stime', entrain_time, envir = .GlobalEnv)
+  
+  # first day of data desired for analysis
+  start_day <- readline('Enter value of start day for data analysis: ')
+  start_day <- as.numeric(start_day)
+  assign('sday', start_day, envir = .GlobalEnv)
+  
+  # last day of data desired for analysis
+  end_day <- readline('Enter value of last day for data analysis: ')
+  end_day <- as.numeric(end_day)
+  assign('eday', end_day, envir = .GlobalEnv)
+  
+  # the type of data to extract
+  d_type <- readline('Enter the type of data to extract, norm or nonnorm: ')
+  assign('datatype', d_type, envir = .GlobalEnv)
+  
+  # the time scale to use
+  h_set <- readline('Enter the timescale desired, either continuous hours (running) or sets of 24 hours (daily): ')
+  assign('hset', h_set, envir = .GlobalEnv)
+  
+}
+
+
+FLIC_anticipation_objects <- function()
+{
+  # warning about overwriting old objects
+  invisible(readline(prompt=" WARNING: this function will write values for R objects to the global environment,
+                     overwriting anything with the same name.
+                     Press [enter] to continue
+                     Press [esc] to exit"))
+  
+  # initial date of experiment
+  initial_date <- readline('Enter value of idate in yyyy-mm-dd format: ')
+  assign('idate', initial_date, envir = .GlobalEnv)
+  
+  # start time of total experiment 
+  initial_time <- readline('Enter value of itime (start time of experiment) in military time: ')
+  initial_time <- as.numeric(initial_time)
+  assign('itime', initial_time, envir = .GlobalEnv)
+  
+  # entrainment start time
+  entrain_time <- readline('Enter value of stime (beginning of entrainment schedule) in military time: ')
+  entrain_time <- as.numeric(entrain_time)
+  assign('etimeS', entrain_time, envir = .GlobalEnv)
+  
+  # entrainment end time
+  entrain_timeE <- readline('Enter value of etime (end of entrainment schedule) in military time: ')
+  entrain_timeE <- as.numeric(entrain_timeE)
+  assign('etimeE', entrain_timeE, envir = .GlobalEnv)
+  
+  #  day of data desired for analysis
+  start_day <- readline('Enter value of start day for data analysis: ')
+  start_day <- as.numeric(start_day)
+  assign('pday', start_day, envir = .GlobalEnv)
+  
+  # last day of data desired for analysis
+  end_day <- readline('Enter value of last day for data analysis: ')
+  end_day <- as.numeric(end_day)
+  assign('fday', end_day, envir = .GlobalEnv)
+  
+}
+
+
+# Function to combine two DFM files that were the result of one being interrupted
+
+FLIC_combine_DFM <- function(data1, data2, file_name)
+{
+  data1_row <- tail(data1, n=1)
+  
+  s_start <- (data1_row$Sample+1) 
+  
+  s_end <- s_start + nrow(data2) - 1
+  
+  s_replace <- c(s_start:s_end)
+  
+  new_dfm <-  data2
+  
+  new_dfm$Sample <- s_replace
+  
+  all_new <- rbind(data1, new_dfm)
+  
+  write.csv(all_new, file_name, row.names = FALSE)
+  
+}
+
+
 # function to calculate the volume of food individual flies consumed in the CAFE assay
-      
+
 CAFE_Feed_Bottle <- function(vol, sdist, fdist, evap, flies)
 {
   feed <- (((vol*(sdist-fdist))/sdist)-evap)/flies
@@ -1182,8 +1390,8 @@ CAFE_Feed_Bottle <- function(vol, sdist, fdist, evap, flies)
   return(feed)
 }
 
-        
-  CAFE_Feed <- function(edist, bottles, flies, fdist, ...)
+
+CAFE_Feed <- function(edist, bottles, flies, fdist, ...)
 {
   tot.dist <- CAFE_Add(fdist, ...)
   
