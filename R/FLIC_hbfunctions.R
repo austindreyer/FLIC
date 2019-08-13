@@ -217,7 +217,7 @@ combine_days <- function(ndays, data, ...)
 
 ## Function to compare amount of feeding per day to filter problem wells/DFMs
 
-FLIC_day_compare <- function(data, idate, itime, etimeS, etimeE, sday, fday)
+FLIC_day_compare <- function(data, idate, itime, etimeS, sday, fday)
 {
   
   # extract name of DFM for particular data
@@ -276,7 +276,7 @@ FLIC_day_compare <- function(data, idate, itime, etimeS, etimeE, sday, fday)
   {
     for (j in 1:12)
     {
-      mmt_compare[i,j] <- ifelse((mmt[i+1,j]<(mmt[i,j]-0.5*mmt[i,j]) | mmt[i+1,j]>(mmt[i,j]+0.5*mmt[i,j])), T, F)
+      mmt_compare[i,j] <- ifelse((mmt[i+1,j]<(mmt[i,j]-0.7*mmt[i,j]) | mmt[i+1,j]>(mmt[i,j]+0.7*mmt[i,j])), T, F)
     }
   }
   
