@@ -263,7 +263,7 @@ FLIC_day_compare <- function(data, sday, fday)
   {
     for (j in 1:12)
     {
-      mmt_compare[i,j] <- ifelse((mmt[i+1,j]<(mmt[i,j]-0.7*mmt[i,j]) | mmt[i+1,j]>(mmt[i,j]+0.7*mmt[i,j]) | mmt[nrow(mmt),j] > 600), T, F)
+      mmt_compare[i,j] <- ifelse((mmt[i+1,j]<(mmt[i,j]-0.7*mmt[i,j]) | mmt[i+1,j]>(mmt[i,j]+0.7*mmt[i,j]) | mmt[i,j] > 800 | mmt[i+1,j] > 800), T, F)
     }
   }
   
@@ -272,6 +272,8 @@ FLIC_day_compare <- function(data, sday, fday)
   mmt_compared$wells <- if(length(w <- apply(mmt_compare, 1, function(data) names(which(data ==T))))) w else mt
   
   # return the list of wells and days
+  print(mmt)
+  print(mmt_compare)
   return(mmt_compared)
   
 }
@@ -438,13 +440,17 @@ feed.total.dropwell <- function(data, well)
 feed.total.names <- function(data, one = "one", 
                              two = "two", 
                              three = "three",
-                             four = "four")
+                             four = "four",
+                             five = "five",
+                             six = "six")
 {
   data$genotype <- as.character(data$genotype)
   data$genotype[data$genotype =="1"] <- one
   data$genotype[data$genotype =="2"] <- two
   data$genotype[data$genotype =="3"] <- three
   data$genotype[data$genotype =="4"] <- four
+  data$genotype[data$genotype =="5"] <- five
+  data$genotype[data$genotype =="6"] <- six
   
   return(data)
 }
