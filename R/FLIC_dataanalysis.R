@@ -211,9 +211,4 @@ memory.limit(99999999)
 source("/Users/your_luc_id/folder_name/subfolder_name/FLIC_hbfunctions.R")
 
 
-# Sample function to randomize genotype placements for FLIC experimental setup
-
-matrix(sample(c(1,1,1,1,1,1,2,2,2,2,2,2), replace = FALSE), nrow=2, ncol=6)
-matrix(sample(c(1,1,1,1,2,2,2,2,3,3,3,3), replace = FALSE), nrow=2, ncol=6)
-
 
