@@ -217,14 +217,89 @@ combine_days <- function(ndays, data, ...)
 
 ## Function to compare amount of feeding per day to filter problem wells/DFMs
 
-FLIC_day_compare <- function(data, sday, fday)
+FLIC_day_compare <- function(data, idate, itime, etimeS, sday, fday)
+{
+  
+  # extract name of DFM for particular data
+  thing <- deparse(substitute(data))
+  
+  things <- strsplit(thing, '[.]')
+  
+  res <- lapply(things, function(ch) grep("dfm", ch))
+  
+  out <- things[[1]][res[[1]]]
+  
+  
+  # extact all data for sday to fday  
+  fly_data <- subset.data(data, idate, itime, etimeS, sday, fday, datatype = 'nonnorm', hset = 'running', c(1:12))
+  fly_data <- fly_data[, -grep("hour", names(fly_data))]
+  
+  # make empty df to store well data
+  mmt <- as.data.frame(matrix(ncol = 12, nrow = (fday-sday)+2))
+  names(mmt) <- c(names(data %>% select(contains("W"))))
+  
+  # add day column for reference
+  days <- c(paste0("d", sday:fday))
+  mmt$day <- c(days, "total")
+  
+  # and another to store comparisons 
+  mmt_compare <- as.data.frame(matrix(ncol = 12, nrow = (fday-sday)))
+  names(mmt_compare) <- c(names(data %>% select(contains("W"))))
+  
+  # create data frame to record comparisons
+  mmt_compared <- as.data.frame(matrix(ncol = 1, nrow = (fday-sday)))
+  names(mmt_compared) <- c("comparison")
+  
+  for (i in 1:(length(days)-1))
+  {
+    mmt_compared$comparison[i] <- paste(days[i], days[i+1], sep = "-")
+  }
+  
+  # then populate empty rows with the summed data
+  for (i in 1:length(sday:fday))
+  {
+    for (j in 1:12)
+    {
+      ps <- 48*(i-1)
+      mmt[i,j] <- sum(fly_data[1:48+ps,j])
+    }
+  }
+  
+  # calculate total feeding events per fly
+  for (i in 1:12)
+  {
+    mmt[nrow(mmt),i] <- sum(mmt[1:(fday-sday+1),i])
+  }
+  
+  # compare data across days and store results in mmt_compare
+  for (i in 1:(length(days)-1))
+  {
+    for (j in 1:12)
+    {
+      mmt_compare[i,j] <- ifelse((mmt[i+1,j]<(mmt[i,j]-0.7*mmt[i,j]) | mmt[i+1,j]>(mmt[i,j]+0.7*mmt[i,j]) | mmt[nrow(mmt),j] < 5000), T, F)
+    }
+  }
+  
+  # scan for trues 
+  mt <- "-"
+  mmt_compared$wells <- if(length(w <- apply(mmt_compare, 1, function(data) names(which(data ==T))))) w else mt
+  
+  # return the list of wells and days
+  return(mmt_compared)
+  
+}
+
+
+# function to compare days based on median baseline
+
+FLIC_day_compare_bl <- function(data, sday, fday)
 {
   # load required package
   library(dplyr)
   
   # assign the data to be used
   use_data <- data$RawData
-   
+  
   # make empty df to store well data
   mmt <- as.data.frame(matrix(ncol = 12, nrow = 0))
   
@@ -241,7 +316,7 @@ FLIC_day_compare <- function(data, sday, fday)
   
   # add day column names and day column for reference
   names(mmt) <- c(names(use_data %>% select(contains("W"))))
-  days <- c(paste0("d", sday:fday))
+  days <- c(sday:fday)
   mmt$day <- c(days)
   
   # create another df to to store comparisons 
@@ -257,13 +332,13 @@ FLIC_day_compare <- function(data, sday, fday)
     mmt_compared$comparison[i] <- paste(days[i], days[i+1], sep = "-")
   }
   
-
+  
   # compare data across days and store results in mmt_compare
   for (i in 1:(length(days)-1))
   {
     for (j in 1:12)
     {
-      mmt_compare[i,j] <- ifelse((mmt[i+1,j]<(mmt[i,j]-0.7*mmt[i,j]) | mmt[i+1,j]>(mmt[i,j]+0.7*mmt[i,j]) | mmt[i,j] > 800 | mmt[i+1,j] > 800), T, F)
+      mmt_compare[i,j] <- ifelse((mmt[i+1,j]<(mmt[i,j]-0.7*mmt[i,j]) | mmt[i+1,j]>(mmt[i,j]+0.7*mmt[i,j]) | mmt[nrow(mmt),j] > 600), T, F)
     }
   }
   
@@ -272,8 +347,6 @@ FLIC_day_compare <- function(data, sday, fday)
   mmt_compared$wells <- if(length(w <- apply(mmt_compare, 1, function(data) names(which(data ==T))))) w else mt
   
   # return the list of wells and days
-  print(mmt)
-  print(mmt_compare)
   return(mmt_compared)
   
 }
