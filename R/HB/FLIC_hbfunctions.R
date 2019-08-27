@@ -239,7 +239,7 @@ FLIC_day_compare <- function(data, idate, itime, etimeS, sday, fday)
   names(mmt) <- c(names(data %>% select(contains("W"))))
   
   # add day column for reference
-  days <- c(paste0("d", sday:fday))
+  days <- c(sday:fday)
   mmt$day <- c(days, "total")
   
   # and another to store comparisons 
