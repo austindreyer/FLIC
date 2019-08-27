@@ -22,5 +22,5 @@ Old scripts that are out of the pipeline flow, but might still prove useful...
   * [ggplot2](https://cran.r-project.org/web/packages/ggplot2/ggplot2.pdf) - Data visualization
 * [signal](https://cran.r-project.org/web/packages/signal/signal.pdf) - Processing of rhythmic data
 
-##### Special Thanks
+#### Special Thanks
 Thank you to the [Pletcher lab](https://sites.google.com/a/umich.edu/pletcher-lab/) at University of Michigan! 
