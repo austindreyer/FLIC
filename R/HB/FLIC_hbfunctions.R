@@ -180,9 +180,9 @@ genotype.means <- function(data, ...)
 }
 
 ## Function to find local maxima and minima, highest peak for 
-## 5 hours on either side (m=10)
+## 2 hours on either side (m=4)
 
-find_peaks <- function (x, m = 10){
+find_peaks <- function (x, m = 4){
   shape <- diff(sign(diff(x, na.pad = FALSE)))
   pks <- sapply(which(shape < 0), FUN = function(i){
     z <- i - m + 1

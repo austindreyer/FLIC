@@ -1,5 +1,5 @@
 #### FLIC_phaseshift ####
-### last updated 8/5/2019 ###
+### last updated 9/19/2019 ###
 
 
 # To look for a phaseshift in the timing of behavioral events, can both plot the data to see and 
@@ -88,4 +88,7 @@
 
 # Once all data is combined, can run an ANOVA on it
 
+#### Evening Phaseshift Start ####
 
+# Can also look at the evening anticipation by identifying the 2-hr window with the largest shift in activity
+# prior to lights off (Lear et al 2009).
