@@ -32,7 +32,7 @@ FLIC_random <- function(num_fly = 12, num_gen = 3)
 
 summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE,
                       conf.interval=.95, .drop=TRUE) {
-  library(plyr)
+  require(plyr)
   
   # New version of length which can handle NA's: if na.rm==T, don't count them
   length2 <- function (x, na.rm=FALSE) {
@@ -295,7 +295,7 @@ FLIC_day_compare <- function(data, idate, itime, etimeS, sday, fday)
 FLIC_day_compare_bl <- function(data, sday, fday)
 {
   # load required package
-  library(dplyr)
+  require(dplyr)
   
   # assign the data to be used
   use_data <- data$RawData
@@ -576,7 +576,7 @@ ind.plot <- function (data,genotype) {
 
 norm.plot <- function (data,genotype) {
   
-  library(ggplot2)
+  require(ggplot2)
   
   mt <- data.frame(matrix(vector(),length(data[,1]),13,
                           dimnames=list(c(),c('hour','w1','w2','w3','w4','w5','w6','w7',
@@ -619,7 +619,7 @@ norm.plot <- function (data,genotype) {
 
 group.plot <- function (data,genotype) {
   
-  library(ggplot2)
+  require(ggplot2)
   
   mt <- data.frame(matrix(vector(),length(data[,1]),13,
                           dimnames=list(c(),c('hour','w1','w2','w3','w4','w5','w6','w7',
@@ -682,7 +682,7 @@ group.plot <- function (data,genotype) {
 
 genotype.plot <- function (data,genotype) {
   
-  library(ggplot2)
+  require(ggplot2)
   
   mt <- data.frame(matrix(vector(),length(data[,1]),length(data[1,])-2))  
   
@@ -797,9 +797,9 @@ genotype.plot.fig <- function (data, title, genotypecol, size=1.5, shape=21, low
 phaseshift_indfly_plot <- function(data, idate, itime, etimeS, etimeE, pday, fday, datatype, well, yhigh, by, day_col)
 {
   # call necessary libraries
-  library(stats)
-  library(signal)
-  library(ggplot2)
+  require(stats)
+  require(signal)
+  require(ggplot2)
   
   # create title for plot
   thing <- deparse(substitute(data))
@@ -1094,8 +1094,8 @@ day_meanbehav_plot <- function(data, yhigh = 3, by = 0.5, title)
 phaseshift_indfly_time <- function(data, genotype, idate, itime, etimeS, etimeE, pday, fday, datatype, well)
 {
   # call necessary libraries
-  library(stats)
-  library(signal)
+  require(stats)
+  require(signal)
  
   thing <- deparse(substitute(data))
   
@@ -1125,11 +1125,12 @@ phaseshift_indfly_time <- function(data, genotype, idate, itime, etimeS, etimeE,
   fly_peaks <- find_peaks(fly_bf)
   
   # make new object containing the peaks in hours of experiment starting with empty object
-  mt_peaks <- NULL
+  mt_peaks <- setNames(data.frame(matrix(ncol = 2, nrow = 0)), c('hours', 'value'))
   # then populate empty object with data, iterating over each peak
   for (i in 1:length(fly_peaks))
   {
-    mt_peaks[i] <- fly_data$hours[fly_peaks[i]]
+    mt_peaks[i,1] <- fly_data$hours[fly_peaks[i]]
+    mt_peaks[i,2] <- fly_bf[fly_peaks[i]]
   }
   
   # extract data for just the phase day of interest
@@ -1143,20 +1144,20 @@ phaseshift_indfly_time <- function(data, genotype, idate, itime, etimeS, etimeE,
   fly_pday$day <- rep(seq(0,23.5,0.5))
   
   # pull out the peaks that match the day of interest
-  pday_peaks <- subset(mt_peaks, mt_peaks > min(fly_pday$hours) & mt_peaks < max(fly_pday$hours))
+  pday_peaks <- subset(mt_peaks, mt_peaks$hours > min(fly_pday$hours) & mt_peaks$hours < max(fly_pday$hours))
   
   # make empty columns for correct peak data to be added
   mt_peaks <-  setNames(data.frame(matrix(ncol = 4, nrow = 1)), c("Mpeak", "Epeak", "well", "genotype"))
   
   # and correct them for relative time on the day of interest
-  if (length(pday_peaks) > 1)
-  {
-    mt_peaks[1] <- pday_peaks[1]-fly_pday[13,2]
-    mt_peaks[2] <- pday_peaks[2]-fly_pday[37,2]
-  } else  {
-    mt_peaks[1] <- NA
-    mt_peaks[2] <- pday_peaks[1]-fly_pday[37,2]
-  }
+ 
+  mt_peaks[1] <- ifelse(length(which(pday_peaks$hours < fly_pday[26,2])) > 0, 
+           pday_peaks[which(pday_peaks$hours < fly_pday[26,2] & max(pday_peaks$value)), 1]-fly_pday[13,2],
+           NA)
+    
+  mt_peaks[2] <- ifelse(length(which(pday_peaks$hours > fly_pday[26,2])) > 0, 
+           pday_peaks[which(pday_peaks$hours > fly_pday[26,2] & max(pday_peaks$value)), 1]-fly_pday[37,2],
+           NA)  
   
   mt_peaks[3] <- t_name
   mt_peaks[4] <- genotype
