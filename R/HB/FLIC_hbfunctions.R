@@ -1028,7 +1028,7 @@ Feeding_Events_DFMPlots <- function(data, datatype, start_min = 0, end_min = 100
 }
 
 # function to create day/night plots of 24 hr averaged activity
-day_meanbehav_plot <- function(data, yhigh = 3, by = 0.5, title)
+day_meanbehav_plot <- function(data, yhigh = 3, by = 0.5, title, daycol)
 {
   
   require(ggplot2)
@@ -1059,7 +1059,7 @@ day_meanbehav_plot <- function(data, yhigh = 3, by = 0.5, title)
     geom_bar(stat = "identity", 
              colour = "black", 
              position = position_nudge(x = 0.25)) +
-    scale_fill_manual(values = c("n" = "black", "d" = "white")) +
+    scale_fill_manual(values = c("n" = "black", "d" = daycol)) +
     ggtitle(sprintf("%s",title)) +
     scale_x_continuous(limits = c(-.5,24.5), 
                        breaks = seq(0,24,6), 
