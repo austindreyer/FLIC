@@ -1,8 +1,23 @@
 ##### FLIC HomeBrew Functions #####
-### Updated 8/5/2019 ###
+### Updated 11/13/2019 ###
 
 
 ####### Generic Functions #######
+
+# Binds two dataframes with different column lengths
+
+databind <- function(dataframe1, dataframe2){
+  if(nrow(dataframe1) > nrow(dataframe2)){
+    as.data.frame(matrix(NA, nrow = nrow(dataframe1)-nrow(dataframe2), ncol = ncol(dataframe2))) -> a
+    colnames(a) <- colnames(dataframe2)
+    rbind(dataframe2, a) -> dataframe2
+  }else if(nrow(dataframe1) < nrow(dataframe2)){
+    as.data.frame(matrix(NA, nrow = nrow(dataframe2)-nrow(dataframe1), ncol = ncol(dataframe1))) -> a
+    colnames(a) <- colnames(dataframe1)
+    rbind(dataframe1, a) -> dataframe1
+  }
+  return(as.data.frame(c(dataframe1, dataframe2)))
+}
 
 ## Umm, standard error of the mean function!
 sem <- function(x) {
@@ -147,7 +162,7 @@ subset.data <- function(data, idate, itime, stime, sday, eday, datatype, hset, w
   {
     mrmt.fsub <- subset(wells.data, hour > start.data)
     mrmt.sub <- mrmt.fsub[1:end.data,]
-    mrmt.sub$hours <- rep(seq(0,23.5,0.5), times = (eday-sday))
+    mrmt.sub$hours <- rep(seq(0,23.5,0.5), times = (eday-sday)+1)
   }
   #remove hour column
   
@@ -1126,6 +1141,7 @@ phaseshift_indfly_time <- function(data, genotype, idate, itime, etimeS, etimeE,
   
   # make new object containing the peaks in hours of experiment starting with empty object
   mt_peaks <- setNames(data.frame(matrix(ncol = 2, nrow = 0)), c('hours', 'value'))
+  
   # then populate empty object with data, iterating over each peak
   for (i in 1:length(fly_peaks))
   {
@@ -1169,6 +1185,7 @@ phaseshift_indfly_time <- function(data, genotype, idate, itime, etimeS, etimeE,
 # function to compile phase shifts in hours for a genotype of a FLIC
 phaseshift_genotype_time <- function(data, genotype, idate, itime, etimeS, etimeE, pday, fday, datatype, well, ...)
 {
+  
   # get the wells to be pulled
   wells <- c(well, ...)
   
@@ -1200,10 +1217,14 @@ phaseshift_genotype_time <- function(data, genotype, idate, itime, etimeS, etime
 }
 
 # function to extract data needed for calculation of anticipation index
-AI_index_prep <- function(data, idate, itime, etimeS, pday, fday, well, ...)
+AI_index_prep <- function(data, idate, itime, etimeS, sday, fday, well, ...)
 {
+  # correct sday and fday values to include 6 hours prior to lights on
+  sday <- sday-0.25
+  eday <- fday-0.25
+  
   # extract all of the data for experiment starting 6 hours before entrainment time for calculations
-  fly_data <- subset.data(data, idate, itime, etimeS, sday = 1.75, fday, "nonnorm", hset = 'running', well, ...)
+  fly_data <- subset.data(data, idate, itime, etimeS, sday, eday, "nonnorm", hset = 'daily', well, ...)
   
   # create well names for reference
   wells <- c(well, ...)
@@ -1218,20 +1239,13 @@ AI_index_prep <- function(data, idate, itime, etimeS, pday, fday, well, ...)
   
   welld <- paste0("W", wells)
   c_name <- paste(out, welld, sep = '_')
-  c_names <- c(c_name, "hours", "day")
+  c_names <- c("hours", c_name)
   
-  # extract data for just the phase day of interest
-  ## first calculate the window of data to pull based on pday
-  ps <- 48*(pday-2)
+  #average behavioral tally of each 30 minute bin for each fly
+  mean_data <- aggregate(. ~hours, data = fly_data, mean)
   
-  # then extract the 24 hours of data for desired day
-  fly_pday <- fly_data[(1:48)+ps,]
-  
-  # add column of just 0-24 hours for reference
-  fly_pday$day <- rep(seq(0,23.5,0.5))
-  
-  colnames(fly_pday) <- c_names
-  return(fly_pday)
+  colnames(mean_data) <- c_names
+  return(mean_data)
 }
 
 # function to calculate the anticipation index activity prior to environmental shift (as described in Stoleru et al. 2004)
@@ -1264,8 +1278,11 @@ AI_index <- function(etimeS, etimeE, genotype, data, ...)
 }
 
 # Function to calculate anticipation phase shift (as described in Harrisingh et al. 2007)
-AI_phase_score <- function(data, genotype, idate, itime, etimeS, etimeE, pday, fday, well, ...)
+AI_phase_score <- function(data, genotype, idate, itime, etimeS, etimeE, sday, fday, well, ...)
 {
+  # correct sday and fday values to include 6 hours prior to lights on
+  sday <- sday-0.25
+  eday <- fday-0.25
   
   # create well names for reference
   wells <- c(well, ...)
@@ -1282,20 +1299,13 @@ AI_phase_score <- function(data, genotype, idate, itime, etimeS, etimeE, pday, f
   c_name <- paste(out, welld, sep = '_')
   
   # extract all of the data for experiment starting 6 hours before entrainment time for calculations
-  fly_data <- subset.data(data, idate, itime, etimeS, sday = 1.75, fday, "nonnorm", hset = 'running', well, ...)
+  fly_data <- subset.data(data, idate, itime, etimeS, sday = sday, eday, "nonnorm", hset = 'daily', well, ...)
   
-  # extract data for just the phase day of interest
-  # first calculate the window of data to pull based on pday
-  ps <- 48*(pday-2)
-  
-  # then extract the 24 hours of data for desired day
-  fly_pday <- fly_data[(1:48)+ps,]
-  
-  # add column of just 0-24 hours for reference
-  fly_pday$day <- rep(seq(0,23.5,0.5))
+  #average behavioral tally of each 30 minute bin for each fly
+  mean_data <- aggregate(. ~hours, data = fly_data, mean)
   
   # extract just well data for calculations
-  mmt <- as.data.frame(fly_pday[ , which(names(fly_pday) %in% c(names(fly_pday %>% select(contains("W")))))])
+  mmt <- as.data.frame(mean_data[ , which(names(mean_data) %in% c(names(mean_data %>% select(contains("W")))))])
   
   # make column names of data frame match well names
   colnames(mmt) <- welld
@@ -1491,7 +1501,7 @@ FLIC_anticipation_objects <- function()
   #  day of data desired for analysis
   start_day <- readline('Enter value of start day for data analysis: ')
   start_day <- as.numeric(start_day)
-  assign('pday', start_day, envir = .GlobalEnv)
+  assign('sday', start_day, envir = .GlobalEnv)
   
   # last day of data desired for analysis
   end_day <- readline('Enter value of last day for data analysis: ')

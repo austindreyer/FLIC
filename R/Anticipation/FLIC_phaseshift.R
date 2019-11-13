@@ -4,13 +4,13 @@
 
 # To look for a phaseshift in the timing of behavioral events, can both plot the data to see and 
 # extract the differences in hours of peak activity for each fly as compared to zeitgeber time
-# which is typically lights on/off
+# which is typically lights on/off (Yao et al. 2016)
 
 
 ### 1 ###
 # Start by assigning values for shared objects across all analyses, e.g. idate, itime
 # Use the function FLIC_anticipation_objects() to do so, it will prompt user input for all
-# required objects for analysis (idate, itime, etimeS, etimeE, pday, fday)
+# required objects for analysis (idate, itime, etimeS, etimeE, sday, fday)
 
 ### 2 ### 
 # Need to make objects for well assignments for each dfm by genotype, if not already
@@ -30,7 +30,7 @@
 #  3. itime = starting time of experiment in miltary time with no colon
 #  4. etimeS = the start of entrainment time (e.g. lights on)
 #  5. etimeE = the end of entrainment time (e.g. lights off)
-#  6. pday = the day of data you want to plot
+#  6. pday = the day of data you want to plot ** Will need to enter this separately
 #  7. fday = the last day of data collected
 #  8. datatype = either "norm" or "nonnorm" for extracting data
 #  that is normalized using standard procedure or not
@@ -51,7 +51,7 @@
 #  4. itime = starting time of experiment in miltary time with no colon
 #  5. etimeS = the start of entrainment time (e.g. lights on)
 #  6. etimeE = the end of entrainment time (e.g. lights off)
-#  7. pday = the day of data you want to plot
+#  7. pday = the day of data you want to plot ** Will need to enter this separately 
 #  8. fday = the last day of data collected
 #  9. datatype = either "norm" or "nonnorm" for extracting data
 #  that is normalized using standard procedure or not
@@ -90,5 +90,5 @@
 
 #### Evening Phaseshift Start ####
 
-# Can also look at the evening anticipation by identifying the 2-hr window with the largest shift in activity
-# prior to lights off (Lear et al 2009).
+# Can also look at the evening anticipation by identifying the 2-hr window with the 
+# largest shift in activity prior to lights off (Lear et al 2009).

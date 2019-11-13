@@ -9,7 +9,7 @@
 # anticipation index of each genotype was normalized
 # to that of wild type (AIwt = 1). Note, this method
 # is for an anticipation index for an entire genotype, 
-# therefore, averaged raw data across a geneotype 
+# therefore, averaged raw data across a genotype 
 # must be passed to the anticipation index function.
 
 ### 1 ###
@@ -28,13 +28,13 @@
 ### 3 ### 
 # Create an object of the raw data for each genotype from each DFM
 # using the AI_index_prep() function which includes the following arguments:
-#  function(data, idate, itime, etimeS, pday, fday, well, ...)
+#  function(data, idate, itime, etimeS, sday, fday, well, ...)
 #  1. data = data to be subsetted, binned data only
 #  2. idate = initial day of experiment in "YYYY-MM-DD" format
 #  3. itime = starting time of experiment in miltary time with no colon
 #  4. etimeS = the start of entrainment time (e.g. lights on)
-#  5. pday = the day of data you want to analyze
-#  6. fday = the last day of data collected
+#  5. sday = the start day of data you want to analyze
+#  6. fday = the last day of data you want to analyze
 #  7. well, ... = the well numbers of matching genotype, numbers only
 
 #  Ex: genotype1_dfm1_AI <- AI_index_prep(bin30.dfm1.data, '2018-02-01', 1755, 0900, 7, 8,genotype1_dfm1_wells)
@@ -60,15 +60,15 @@
 ### 1 ###
 # Need to make an object that calculates the AI phase score for each fly by DFM
 # using the AI_phase_score() function which includes the following arguments:
-# function(data, genotype, idate, itime, etimeS, etimeE, pday, fday, well, ...)
+# function(data, genotype, idate, itime, etimeS, etimeE, sday, fday, well, ...)
 #  1. data = data to be subsetted, binned data only
 #  2. genotype = genotype of fly, in quotes
 #  3. idate = initial day of experiment in "YYYY-MM-DD" format
 #  4. itime = starting time of experiment in miltary time with no colon
 #  5. etimeS = the start of entrainment time (e.g. lights on)
 #  6. etimeE = the end of entrainment time (e.g. lights off)
-#  7. pday = the day of data you want to analyze
-#  8. fday = the last day of data collected
+#  7. sday = the first day of data you want to analyze
+#  8. fday = the last day of data you want to analyze
 #  9. well, ... = the well numbers of matching genotype, numbers only
 
 # Ex: genotype1_dfm1_AIps <- AI_phase_score(bin30.dfm1.data, 'genotype1', idate, itime, etimeS, etimeE, pday, fday, genotype1_dfm1_wells)
