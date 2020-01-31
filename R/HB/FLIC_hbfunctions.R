@@ -1509,7 +1509,7 @@ FLIC_anticipation_objects <- function()
   assign('fday', end_day, envir = .GlobalEnv)
   
   # phase day of data desired for analysis, i.e. DD day
-  phase_day <- readline('Enter value of last day for data analysis: ')
+  phase_day <- readline('Enter value of the phase (DD) day for data analysis: ')
   phase_day <- as.numeric(end_day)
   assign('pday', phase_day, envir = .GlobalEnv)
 }

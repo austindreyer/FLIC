@@ -30,7 +30,7 @@
 #  3. itime = starting time of experiment in miltary time with no colon
 #  4. etimeS = the start of entrainment time (e.g. lights on)
 #  5. etimeE = the end of entrainment time (e.g. lights off)
-#  6. pday = the day of data you want to plot ** Will need to enter this separately
+#  6. pday = the day of data you want to plot
 #  7. fday = the last day of data collected
 #  8. datatype = either "norm" or "nonnorm" for extracting data
 #  that is normalized using standard procedure or not
