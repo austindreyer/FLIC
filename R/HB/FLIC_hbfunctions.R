@@ -1,5 +1,5 @@
 ##### FLIC HomeBrew Functions #####
-### Updated 11/13/2019 ###
+### Updated 1/17/2020 ###
 
 
 ####### Generic Functions #######
@@ -1498,7 +1498,7 @@ FLIC_anticipation_objects <- function()
   entrain_timeE <- as.numeric(entrain_timeE)
   assign('etimeE', entrain_timeE, envir = .GlobalEnv)
   
-  #  day of data desired for analysis
+  # first day of data desired for analysis
   start_day <- readline('Enter value of start day for data analysis: ')
   start_day <- as.numeric(start_day)
   assign('sday', start_day, envir = .GlobalEnv)
@@ -1508,6 +1508,10 @@ FLIC_anticipation_objects <- function()
   end_day <- as.numeric(end_day)
   assign('fday', end_day, envir = .GlobalEnv)
   
+  # phase day of data desired for analysis, i.e. DD day
+  phase_day <- readline('Enter value of last day for data analysis: ')
+  phase_day <- as.numeric(end_day)
+  assign('pday', phase_day, envir = .GlobalEnv)
 }
 
                 

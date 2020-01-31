@@ -1,6 +1,6 @@
-## updated 7/26/2019
+## updated 1/17/2020
 #setup program
-library(stringr) ##for adding strings to inputs
+require(stringr) ##for adding strings to inputs
 
 #Reading in scripts
 print("There are several R scripts you need to have downloaded from the Cavanaugh Lab OneDrive. ")
@@ -41,13 +41,13 @@ c(scriptdir, "/FLIC_hbfunctions.R") ->a
 str_c(a, collapse = "") -> a
 source(a)
 ## loading in librarys
-library(plyr)
-library(tidyverse)
-library(MASS)
-library(reshape2)
+require(plyr)
+require(tidyverse)
+require(MASS)
+require(reshape2)
 ##reload dplyr to establish precedence of functions
 detach(package:dplyr)
-library(dplyr)
+require(dplyr)
 ## increase memory
 memory.limit(99999999)
 menu(c("Yes", "No"),graphics = FALSE, title = "Begin MonitorSetup?") -> a
